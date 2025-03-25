@@ -13,25 +13,23 @@ button {
 
 
 .card-container {
-  display: flex;  /* Enables flexbox */
-  flex-wrap: wrap; /* Allows cards to wrap if they don’t fit in one row */
-  gap: 1em; /* Adds spacing between cards */
-  justify-content: start; /* Aligns cards to the left */
-  align-items: start; /* Aligns them at the top */
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); /* Ensures a minimum card size */
+  gap: 0.5em; /* Reduced space between cards */
   padding: 1em;
 }
 .card{
   display: flex;
   flex-direction: column;
-  align-items: start;
-  justify-content: center;
-  width: 10%;
-  height: 100%;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  height: 250px;
   background-color: #fffbfb;
-  border-radius: 8px;
+  border-radius: 1px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  padding: 2%;
-  margin: 1em;
+  padding :2%;
+  
   color:black;
   text-align: center;
   
@@ -42,16 +40,34 @@ button {
   color: #ffffff;
 }
 .card .tradeImage{
-  width:95%;
+  width:98%;
   height: 100%;
   border-radius:2%;
   padding:1px;
 
 }
  .card .profitLoss{
-  color: rgb(4, 0, 128);
-  font-family:Arial, Helvetica, sans-serif;
+  color: rgb(44, 72, 255);
+  font-family:Georgia, 'Times New Roman', Times, serif, monospace;
+  font-size: 1em;
+  font-weight: bold;
   align-items: center;
+
+  margin:5px auto;
+
+}
+.card .dateTime{
+  margin:5px;
+}
+
+.card .cardTittle{
+  font-size: 1.2em;
+  font-weight: bold;
+  align-items: center;
+  text-align: center;
+  padding: 2px;
+  margin:5px auto;
+
 }
 
 
