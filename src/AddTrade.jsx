@@ -1,6 +1,7 @@
 import React from "react";
 import { useState } from "react";
-const TradeInputForm = () => {
+const TradeInputForm = (props) => {
+  const userId = 1;
   const [trade, setTrade] = useState({
     commodity: "",
     tradeType: "BUY",
@@ -17,9 +18,29 @@ const TradeInputForm = () => {
     broker: "",
     strategy: "",
     comments: "",
+    tags: "",
+    tradeLink: "",
+    tradeImages: [],
+    riskReward: "",
+    accountNumber: "",
   });
 
+  const [showErrorModal, setShowErrorModal] = useState(false);
   const [customLotSize, setCustomLotSize] = useState("custom");
+  let errorMessage = "";
+  const validateInfo = (e) => {
+    e.preventDefault();
+
+    const openDate = new Date(document.getElementById("openDate").value);
+    const closeDate = new Date(document.getElementById("closeDate").value);
+    if (closeDate <= openDate) {
+      errorMessage = "Closing date must be after opening date.";
+      setShowErrorModal(true);
+    } else {
+      setShowErrorModal(false);
+      console.log("Trade Submitted", trade); // Proceed with your logic
+    }
+  };
 
   const handleLotSizeChange = (e) => {
     const value = e.target.value;
@@ -36,13 +57,29 @@ const TradeInputForm = () => {
   //     setCustomLotSize(value); // Update customLotSize separately
   //     setTrade({ ...trade, lotSize: value }); // Update trade.lotSize with the custom value
   //   };
-  const handleChange = (e) => {
-    console.log(e.target.name, e.target.value);
-  };
+  const handleChange = (e) => {};
   return (
     <div className="bodyContainer">
       <div className="inputFormContainer">
-        <form className="inputForm">
+        {showErrorModal && (
+          <div
+            style={{
+              position: "fixed",
+              top: "50%",
+              left: "50%",
+              transform: "translate(-50%, -50%)",
+              background: "rgba(0,0,0,0.5)",
+              padding: "20px",
+              borderRadius: "8px",
+              color: "white",
+            }}
+          >
+            <h2>Error</h2>
+            <p>{errorMessage}</p>
+            <button onClick={() => setShowErrorModal(false)}>Close</button>
+          </div>
+        )}
+        <form className="inputForm" onSubmit={validateInfo}>
           <label className="inputFormLabels" htmlFor="commodityName">
             Commodity Name
           </label>
@@ -56,13 +93,18 @@ const TradeInputForm = () => {
           />
           <br />
           <label htmlFor="account-number">Account Number</label>
-          <input
-            type="text"
-            id="account-number"
-            name="account-number"
-            placeholder="Enter Account Number"
-            className="inputFormInputBox"
-          />
+       
+          <select 
+         
+          id="account-number"
+          name="account-number"
+          placeholder="Enter Account Number (optional)"
+         
+          >
+            <option value=" ">Select Account</option>
+           
+           
+          </select>
           <br />
           <label htmlFor="tradeType">Buy Or Sell</label>
           <select name="tradeType" id="tradeType" required>
@@ -101,6 +143,7 @@ const TradeInputForm = () => {
             min="0"
             id="entryPrice"
             className="inputFormInputBox"
+            step="0.01"
           />
           <br />
           <label htmlFor="exitPrice">Exit Price</label>
@@ -111,6 +154,8 @@ const TradeInputForm = () => {
             onChange={handleChange}
             className="inputFormInputBox"
             id="exitPrice"
+            min="0"
+            step="0.01"
           />
           <br />
           <label htmlFor="openDate">Open Time</label>
@@ -234,6 +279,29 @@ const TradeInputForm = () => {
             onChange={handleChange}
           />
           <br />
+          <label
+            htmlFor="tradeLinks"
+            style={{ display: "block", marginBottom: "5px" }}
+          >
+            Trade Links
+          </label>
+          <textarea
+            name="tradeLinks"
+            placeholder="Trade Links (Separate multiple links with spaces)"
+            onChange={handleChange}
+            className="tradeLink"
+            id="tradeLinks"
+          />
+          <br />
+          <label htmlFor="tradeImages">Trade Images</label>
+          <input
+            type="file"
+            name="tradeImages"
+            accept="image/*"
+            id="tradeImages"
+            multiple
+            onChange={handleChange}
+          />
           <button
             type="submit"
             style={{
