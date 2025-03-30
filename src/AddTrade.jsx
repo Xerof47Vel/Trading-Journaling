@@ -1,5 +1,6 @@
 import React from "react";
 import { useState } from "react";
+import axios from "axios";
 const TradeInputForm = (props) => {
   const userId = 1;
   const [trade, setTrade] = useState({
@@ -28,6 +29,8 @@ const TradeInputForm = (props) => {
   const [showErrorModal, setShowErrorModal] = useState(false);
   const [customLotSize, setCustomLotSize] = useState("custom");
   let errorMessage = "";
+  const [isPending, setIsPending] = useState(false);
+
   const validateInfo = (e) => {
     e.preventDefault();
 
@@ -39,7 +42,62 @@ const TradeInputForm = (props) => {
     } else {
       setShowErrorModal(false);
       console.log("Trade Submitted", trade); // Proceed with your logic
+      const tradeData = structureData();
+      setIsPending(true);
+      axios.post("https://2s33943isc.execute-api.eu-north-1.amazonaws.com/development/addtrade",JSON.stringify(tradeData)).
+      then((res)=>
+      {
+        console.log("Trade submitted successfully", res.data);
+        setIsPending(false);
+        
+        // Handle success response here
+      }).catch((error) => {
+        console.error("Error submitting trade", error);
+        setIsPending(false);
+        errorMessage = "Error submitting trade. Please try again.";
+        setShowErrorModal(true);
+        // Handle error response here
+      });
     }
+  };
+  const structureData = () => {
+    let lotS = "";
+    if (trade.lotSize === "custom") {
+      lotS = document.getElementById("customLotSize").value;
+    } else lotS = trade.lotSize;
+
+    const images = document.getElementById("tradeImages").files;
+    const imagesArray = [];
+    for (let i = 0; i < images.length; i++) {
+      imagesArray.push(images[i]);
+    }
+
+    const tradeData = {
+      userId: 1,
+      accountNumber: document.getElementById("account-number").value,
+      tradeImages: " ",
+      commodity: document.getElementById("commodityName").value,
+      tradeType: document.getElementById("tradeType").value,
+      lotSize: lotS,
+      entryPrice: document.getElementById("entryPrice").value,
+      exitPrice: document.getElementById("exitPrice").value,
+      openDate: new Date(
+        document.getElementById("openDate").value
+      ).toISOString(),
+      closeDate: new Date(
+        document.getElementById("closeDate").value
+      ).toISOString(),
+      profitLoss: document.getElementById("pL").value,
+      equityBefore: document.getElementById("equityBefore").value,
+      equityAfter: document.getElementById("equityAfter").value,
+      stopLoss: document.getElementById("sl").value,
+      takeProfit: document.getElementById("tp").value,
+      strategy: document.getElementById("strategyUsed").value,
+      comments: document.getElementById("comments").value,
+      tags: document.getElementById("tags").value,
+      tradeLink: document.getElementById("tradeLinks").value,
+    };
+    return tradeData;
   };
 
   const handleLotSizeChange = (e) => {
@@ -93,17 +151,12 @@ const TradeInputForm = (props) => {
           />
           <br />
           <label htmlFor="account-number">Account Number</label>
-       
-          <select 
-         
-          id="account-number"
-          name="account-number"
-          placeholder="Enter Account Number (optional)"
-         
+          <select
+            id="account-number"
+            name="account-number"
+            placeholder="Enter Account Number (optional)"
           >
             <option value=" ">Select Account</option>
-           
-           
           </select>
           <br />
           <label htmlFor="tradeType">Buy Or Sell</label>
@@ -129,6 +182,7 @@ const TradeInputForm = (props) => {
                 placeholder="Custom Lot Size"
                 min="0"
                 className="inputFormInputBox"
+                id="customLotSize"
               />
             </>
           )}
@@ -302,21 +356,43 @@ const TradeInputForm = (props) => {
             multiple
             onChange={handleChange}
           />
-          <button
-            type="submit"
-            style={{
-              width: "100%",
-              background: "#007bff",
-              color: "#fff",
-              padding: "10px",
-              border: "none",
-              borderRadius: "5px",
-              marginTop: "10px",
-              cursor: "pointer",
-            }}
-          >
-            Submit Trade
-          </button>
+          {!isPending && (
+            <button
+              type="submit"
+              style={{
+                width: "100%",
+                background: "#007bff",
+                color: "#fff",
+                padding: "10px",
+                border: "none",
+                borderRadius: "5px",
+                marginTop: "10px",
+                cursor: "pointer",
+              }}
+            >
+              Submit Trade
+            </button>
+          )}
+          {
+            isPending && (
+              <button
+                type="submit"
+                disabled
+                style={{
+                  width: "100%",
+                  background: "#007bff",
+                  color: "#fff",
+                  padding: "10px",
+                  border: "none",
+                  borderRadius: "5px",
+                  marginTop: "10px",
+                  cursor: "pointer",
+                }}
+              >
+                Adding Trade...
+              </button>
+            )
+          }
         </form>
       </div>
     </div>
