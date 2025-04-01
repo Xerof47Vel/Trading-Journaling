@@ -44,20 +44,24 @@ const TradeInputForm = (props) => {
       console.log("Trade Submitted", trade); // Proceed with your logic
       const tradeData = structureData();
       setIsPending(true);
-      axios.post("https://2s33943isc.execute-api.eu-north-1.amazonaws.com/development/addtrade",JSON.stringify(tradeData)).
-      then((res)=>
-      {
-        console.log("Trade submitted successfully", res.data);
-        setIsPending(false);
-        
-        // Handle success response here
-      }).catch((error) => {
-        console.error("Error submitting trade", error);
-        setIsPending(false);
-        errorMessage = "Error submitting trade. Please try again.";
-        setShowErrorModal(true);
-        // Handle error response here
-      });
+      axios
+        .post(
+          "https://2s33943isc.execute-api.eu-north-1.amazonaws.com/development/addtrade",
+          JSON.stringify(tradeData)
+        )
+        .then((res) => {
+          console.log("Trade submitted successfully", res.data);
+          setIsPending(false);
+
+          // Handle success response here
+        })
+        .catch((error) => {
+          console.error("Error submitting trade", error);
+          setIsPending(false);
+          errorMessage = "Error submitting trade. Please try again.";
+          setShowErrorModal(true);
+          // Handle error response here
+        });
     }
   };
   const structureData = () => {
@@ -78,20 +82,20 @@ const TradeInputForm = (props) => {
       tradeImages: " ",
       commodity: document.getElementById("commodityName").value,
       tradeType: document.getElementById("tradeType").value,
-      lotSize: lotS,
-      entryPrice: document.getElementById("entryPrice").value,
-      exitPrice: document.getElementById("exitPrice").value,
+      lotSize: parseFloat(lotS),
+      entryPrice: parseFloat(document.getElementById("entryPrice").value),
+      exitPrice: parseFloat(document.getElementById("exitPrice").value),
       openDate: new Date(
         document.getElementById("openDate").value
       ).toISOString(),
       closeDate: new Date(
         document.getElementById("closeDate").value
       ).toISOString(),
-      profitLoss: document.getElementById("pL").value,
-      equityBefore: document.getElementById("equityBefore").value,
-      equityAfter: document.getElementById("equityAfter").value,
-      stopLoss: document.getElementById("sl").value,
-      takeProfit: document.getElementById("tp").value,
+      profitLoss: parseFloat(document.getElementById("pL").value),
+      equityBefore: parseFloat(document.getElementById("equityBefore").value),
+      equityAfter: parseFloat(document.getElementById("equityAfter").value),
+      stopLoss: parseFloat(document.getElementById("sl").value),
+      takeProfit: parseFloat(document.getElementById("tp").value),
       strategy: document.getElementById("strategyUsed").value,
       comments: document.getElementById("comments").value,
       tags: document.getElementById("tags").value,
@@ -197,7 +201,7 @@ const TradeInputForm = (props) => {
             min="0"
             id="entryPrice"
             className="inputFormInputBox"
-            step="0.01"
+            step="0.0001"
           />
           <br />
           <label htmlFor="exitPrice">Exit Price</label>
@@ -373,26 +377,24 @@ const TradeInputForm = (props) => {
               Submit Trade
             </button>
           )}
-          {
-            isPending && (
-              <button
-                type="submit"
-                disabled
-                style={{
-                  width: "100%",
-                  background: "#007bff",
-                  color: "#fff",
-                  padding: "10px",
-                  border: "none",
-                  borderRadius: "5px",
-                  marginTop: "10px",
-                  cursor: "pointer",
-                }}
-              >
-                Adding Trade...
-              </button>
-            )
-          }
+          {isPending && (
+            <button
+              type="submit"
+              disabled
+              style={{
+                width: "100%",
+                background: "#007bff",
+                color: "#fff",
+                padding: "10px",
+                border: "none",
+                borderRadius: "5px",
+                marginTop: "10px",
+                cursor: "pointer",
+              }}
+            >
+              Adding Trade...
+            </button>
+          )}
         </form>
       </div>
     </div>
