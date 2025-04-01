@@ -41,8 +41,9 @@ const TradeInputForm = (props) => {
       setShowErrorModal(true);
     } else {
       setShowErrorModal(false);
-      console.log("Trade Submitted", trade); // Proceed with your logic
+      
       const tradeData = structureData();
+      console.log("Trade Submitted", tradeData); //
       setIsPending(true);
       axios
         .post(
@@ -77,6 +78,7 @@ const TradeInputForm = (props) => {
     }
 
     const tradeData = {
+      "body":{
       userId: 1,
       accountNumber: document.getElementById("account-number").value,
       tradeImages: " ",
@@ -100,7 +102,8 @@ const TradeInputForm = (props) => {
       comments: document.getElementById("comments").value,
       tags: document.getElementById("tags").value,
       tradeLink: document.getElementById("tradeLinks").value,
-    };
+    }
+  };
     return tradeData;
   };
 
