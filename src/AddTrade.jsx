@@ -1,7 +1,11 @@
 import React from "react";
 import { useState } from "react";
 import axios from "axios";
+import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
+import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
+
 const TradeInputForm = (props) => {
+  const S3_BUCKET = "tradingpictures";
 
   const [trade, setTrade] = useState({
     commodity: "",
@@ -25,7 +29,6 @@ const TradeInputForm = (props) => {
     riskReward: "",
     accountNumber: "",
   });
-  
 
   const [showErrorModal, setShowErrorModal] = useState(false);
   const [customLotSize, setCustomLotSize] = useState("custom");
@@ -78,8 +81,86 @@ const TradeInputForm = (props) => {
       accountNumber: "",
     });
   };
+  const getSignedUrl = async (file) => {
+    try {
+      const body= {
+        
+          body: {
+            file_name: file.name,
+            file_type: file.type,
+          }
+      }
+      console.log("Request body for signed URL:", body);
+      const response = await axios.post("https://2s33943isc.execute-api.eu-north-1.amazonaws.com/development/createImageLink",body
+        
+      );
+      
+      // Correctly parse the response based on its structure
+      let responseBody;
+      if (typeof response.data === 'string') {
+        responseBody = JSON.parse(response.data);
+      } else {
+        responseBody = response.data;
+      }
+      
+      if (typeof responseBody.body === 'string') {
+        responseBody = JSON.parse(responseBody.body);
+      }
+      
+      console.log("Response with signed URL:", responseBody);
+      
+      if (!responseBody.url) {
+        console.error("No URL in response:", responseBody);
+        return null;
+      }
+      
+      return responseBody;
+    } catch (error) {
+      console.error("Error getting signed URL", error);
+      return null;
+    }
+  };
+  const getUrls = async () => {
+    const images = document.getElementById("tradeImages").files;
+    const signedUrls = [];
+  
+    if (images.length === 0) {
+      return []; // Return empty array if no images selected
+    }
+  
+    for (const image of images) {
+      try {
+        const signedUrlData = await getSignedUrl(image);
+        
+        if (!signedUrlData || !signedUrlData.url) {
+          console.error("Failed to get signed URL for image:", image.name);
+          continue;
+        }
+        
+        console.log(`Got signed URL for ${image.name}:`, signedUrlData.url);
+        
+        // Upload the image using the signed URL
+        await axios.put(signedUrlData.url, image, {
+          headers: {
+            "Content-Type": image.type
+          }
+        });
+        
+        console.log(`Image ${image.name} uploaded successfully`);
+        
+        // Extract the base URL without query parameters
+        const baseUrl = signedUrlData.url.split('?')[0];
+        signedUrls.push(baseUrl);
+        console.log(signedUrls);
+      } catch (error) {
+        console.error(`Error processing image ${image.name}:`, error);
+      }
+    }
+    
+    return signedUrls;
+  };
 
-  const validateInfo = (e) => {
+  const validateInfo = async (e) => {
     e.preventDefault();
 
     const openDate = new Date(document.getElementById("openDate").value);
@@ -90,7 +171,7 @@ const TradeInputForm = (props) => {
     } else {
       setShowErrorModal(false);
 
-      const tradeData = structureData();
+      const tradeData =  await structureData();
       console.log("Trade Submitted", tradeData); //
       setIsPending(true);
       axios
@@ -115,20 +196,16 @@ const TradeInputForm = (props) => {
         });
     }
   };
-  const structureData = () => {
+  const structureData = async() => {
     let lotS = "";
     if (trade.lotSize === "custom") {
       lotS = document.getElementById("customLotSize").value;
     } else lotS = trade.lotSize;
 
-    const images = document.getElementById("tradeImages").files;
-    const imagesArray = [];
-    for (let i = 0; i < images.length; i++) {
-      imagesArray.push(images[i]);
-    }
-
+    let images =await getUrls();
+    console.log(images);
     const tradeData = {
-      "type":"add_trade",
+      type: "add_trade",
       body: {
         userId: 1,
         accountNumber: document.getElementById("account-number").value,
@@ -152,7 +229,7 @@ const TradeInputForm = (props) => {
         strategy: document.getElementById("strategyUsed").value,
         comments: document.getElementById("comments").value,
         tags: document.getElementById("tags").value,
-        tradeLink: document.getElementById("tradeLinks").value,
+        tradeLink: images.toString().concat(document.getElementById("tradeLinks").value),
       },
     };
     return tradeData;
