@@ -15,7 +15,7 @@ function Navigation() {
             <Link to="/addtrade">Trade Log</Link>
           </li>
           <li>
-            <Link to="#">Statistics</Link>
+            <Link to="/dashboard">DashBoard</Link>
           </li>
           <li>
             <Link to="#">Settings</Link>
