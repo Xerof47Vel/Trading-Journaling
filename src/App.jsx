@@ -1,6 +1,7 @@
-import Header from "./Header";
+// import Header from "./Header";
 import Body from "./Body";
-import Navigation from "./Navigation";
+import Navigation from "./components/navbar/navbar.jsx";
+import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import AddTrade from "./AddTrade";
 

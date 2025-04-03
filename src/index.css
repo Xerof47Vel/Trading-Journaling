@@ -1,4 +1,5 @@
 @import url("https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap");
+@import "tailwindcss";
 button {
   border-radius: 7px;
   border: 1px solid transparent;
@@ -269,4 +270,115 @@ label {
 
 .tradeLink::placeholder {
   color: #ff5151; /* Light gray for placeholder text */
+}
+
+/* Integration styles to make the original navigation and new dashboard work together */
+.app-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.top-header {
+  background-color: #151518;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 30px;
+  height: 60px;
+  border-bottom: 1px solid #222;
+}
+
+.websiteHeaderName {
+  font-size: 18px;
+  font-weight: 600;
+  color: #fff;
+  margin: 0;
+}
+
+.top-nav {
+  display: flex;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.top-nav li {
+  margin-left: 20px;
+}
+
+.top-nav a {
+  color: #fff;
+  text-decoration: none;
+  font-size: 14px;
+  padding: 5px 10px;
+  border-radius: 4px;
+  transition: background-color 0.2s;
+}
+
+.top-nav a:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Adjust the dashboard container to account for the top header */
+.dashboard-container {
+  flex: 1;
+  min-height: calc(100vh - 60px);
+}
+
+/* Reset some common browser defaults */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: 'Inter', 'Roboto', 'Helvetica Neue', sans-serif;
+  background-color: #0f0f12;
+  color: #fff;
+}
+
+/* Making lists in the sidebar look clean */
+ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+/* Make sure images don't overflow */
+img {
+  max-width: 100%;
+}
+
+/* Responsive adjustments */
+@media (max-width: 1024px) {
+  .middle-row {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .dashboard-container {
+    flex-direction: column;
+  }
+  
+  .side-menu {
+    width: 100%;
+    padding: 10px 0;
+  }
+  
+  .top-row, .bottom-row {
+    grid-template-columns: 1fr;
+  }
+  
+  .middle-row {
+    grid-template-columns: 1fr;
+  }
+  
+  .dashboard-content {
+    padding: 15px;
+  }
 }
