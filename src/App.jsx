@@ -5,6 +5,7 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import AddTrade from "./AddTrade";
 import Dashboard from "./DashBoard";
 import AddTradingAccount from "./AddTradingAccount";
+import LoginPage from "./LoginPage";
 
 function App() {
   return (
@@ -16,6 +17,7 @@ function App() {
           <Route exact path="/addtrade" element={<AddTrade/>}></Route>
           <Route exact path="/dashboard" element={<Dashboard/>}></Route>
           <Route exact path="/tradingAccount" element={<AddTradingAccount />} />
+          <Route path="/login" element={<LoginPage />} />
         </Routes>
       </div>
     </Router>
