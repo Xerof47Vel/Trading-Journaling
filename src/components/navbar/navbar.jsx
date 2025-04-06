@@ -182,18 +182,6 @@ const Navigation = () => {
 
         {/* Secondary Navigation and Settings */}
         <div className="px-3 py-2">
-          {/* Theme Toggle */}
-          <button 
-            className={`flex items-center justify-center ${!collapsed ? 'w-full' : ''} px-3 py-2.5 rounded-lg ${hoverBgColor} transition-colors duration-200 mb-2`}
-            onClick={toggleTheme}
-            aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
-          >
-            <span className="flex items-center justify-center text-blue-400">
-              {isDark ? <Sun size={18} /> : <Moon size={18} />}
-            </span>
-            {!collapsed && <span className="ml-3 font-medium">{isDark ? 'Light Mode' : 'Dark Mode'}</span>}
-          </button>
-
           {/* Settings & Help */}
           <ul className="space-y-1">
             {bottomItems.map((item, index) => (
@@ -210,7 +198,19 @@ const Navigation = () => {
           </ul>
         </div>
 
-        {/* User Profile - Updated as requested */}
+        {/* Theme Toggle */}
+        <button 
+          className={`flex items-center justify-center ${!collapsed ? 'w-full' : ''} px-3 py-2.5 rounded-lg ${hoverBgColor} transition-colors duration-200 mb-2`}
+          onClick={toggleTheme}
+          aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
+        >
+          <span className="flex items-center justify-center text-blue-400">
+            {isDark ? <Sun size={18} /> : <Moon size={18} />}
+          </span>
+          {!collapsed && <span className="ml-3 font-medium">{isDark ? 'Light Mode' : 'Dark Mode'}</span>}
+        </button>
+
+        {/* User Profile*/}
         <div className="mt-auto px-3 py-4">
           {/* For desktop and expanded view */}
           {!collapsed && !isMobile && (
