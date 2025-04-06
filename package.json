@@ -12,6 +12,8 @@
   "dependencies": {
     "@tailwindcss/vite": "^4.1.2",
     "axios": "^1.8.4",
+    "cmdk": "^1.1.1",
+    "lucide-react": "^0.487.0",
     "prop-types": "^15.8.1",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",

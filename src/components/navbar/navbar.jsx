@@ -1,194 +1,259 @@
-import React, { useState, useEffect } from "react";
-import { Link, useLocation } from "react-router-dom";
-import { FaHome, FaChartLine, FaCog, FaBook, FaMoon, FaSun, FaQuestionCircle } from "react-icons/fa";
-import Logo from "../../assets/logoTradingJournal.png"; 
-import LogoMobile from "../../assets/logoTradingJournalMobile.png";
+import React, { useState, useEffect } from 'react';
+import { 
+  Search, Home, ChartBar, Users, FileText, Settings, 
+  HelpCircle, LogOut, Menu, X, Moon, Sun, ChevronLeft, ChevronRight
+} from 'lucide-react';
+import Img1 from '../../assets/profile.jpg';
+import Img2 from '../../assets/newLogo.png';
 
-function Navigation() {
-  document.title = "The Journal";
-  const [isDark, setIsDark] = useState(false);
-  const [isMobileSidebarCollapsed, setIsMobileSidebarCollapsed] = useState(false);
-  const [userFullName] = useState("John Doe");
-  const [userRole] = useState("Trader");
-  const location = useLocation();
+const Navigation = () => {
+  const [collapsed, setCollapsed] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+  const [isDark, setIsDark] = useState(true);
+  const [isOpen, setIsOpen] = useState(false);
 
-  // Check if current route is active
-  const isActive = (path) => {
-    return location.pathname === path;
-  };
-
-  // Function to toggle dark mode
-  const toggleDark = () => {
-    setIsDark(!isDark);
-  };
-
-
-  // Check window size and update sidebar state
-  const checkWindowSize = () => {
-    setIsMobileSidebarCollapsed(window.innerWidth < 1024);
-  };
-
+  // Check if screen is mobile size on mount and when window resizes
   useEffect(() => {
-    checkWindowSize();
-    window.addEventListener("resize", checkWindowSize);
-
-    // Cleanup
-    return () => {
-      window.removeEventListener("resize", checkWindowSize);
+    const checkScreenSize = () => {
+      setIsMobile(window.innerWidth < 768);
+      if (window.innerWidth < 768) {
+        setCollapsed(true);
+        setIsOpen(false);
+      } else {
+        setIsOpen(true);
+      }
     };
+
+    // Initial check
+    checkScreenSize();
+    
+    // Add event listener
+    window.addEventListener('resize', checkScreenSize);
+    
+    // Clean up
+    return () => window.removeEventListener('resize', checkScreenSize);
   }, []);
 
-  // Get avatar label from user's name
-  const getAvatarLabel = () => {
-    return userFullName ? userFullName.charAt(0).toUpperCase() : "T";
+  const toggleSidebar = () => {
+    if (isMobile) {
+      setIsOpen(!isOpen);
+    } else {
+      setCollapsed(!collapsed);
+    }
   };
 
+  const toggleTheme = () => {
+    setIsDark(!isDark);
+    // In a real app, you would also update the document class or CSS variables
+    document.documentElement.classList.toggle('dark');
+  };
+
+  const menuItems = [
+    { icon: <Home size={20} />, title: 'Dashboard', active: true },
+    { icon: <ChartBar size={20} />, title: 'Analytics' },
+    { icon: <Users size={20} />, title: 'Customers' },
+    { icon: <FileText size={20} />, title: 'Reports' },
+  ];
+
+  const bottomItems = [
+    { icon: <Settings size={20} />, title: 'Settings' },
+    { icon: <HelpCircle size={20} />, title: 'Help Center' },
+  ];
+
+  // Conditional classes based on theme
+  const bgColor = isDark ? 'bg-gray-900' : 'bg-white';
+  const textColor = isDark ? 'text-white' : 'text-gray-800';
+  // const borderColor = isDark ? 'border-gray-800' : 'border-gray-100';
+  const inputBgColor = isDark ? 'bg-gray-800' : 'bg-gray-50';
+  const inputTextColor = isDark ? 'text-gray-300' : 'text-gray-600';
+  const hoverBgColor = isDark ? 'hover:bg-gray-800' : 'hover:bg-gray-50';
+  const iconColor = isDark ? 'text-gray-400' : 'text-gray-500';
+  const linkColor = isDark ? 'text-gray-400 hover:text-blue-400' : 'text-gray-500 hover:text-blue-600';
+
   return (
-    <div className="flex">
+    <>
+      {/* Mobile Overlay */}
+      {isMobile && isOpen && (
+        <div 
+          className="fixed inset-0 bg-black bg-opacity-50 z-20 backdrop-blur-sm"
+          onClick={() => setIsOpen(false)}
+        />
+      )}
+
+      {/* Mobile Toggle Button */}
+      <button 
+        className={`fixed top-4 left-4 z-30 md:hidden p-2 rounded-full shadow-md ${isDark ? 'bg-gray-800 text-white' : 'bg-white text-gray-800'}`}
+        onClick={toggleSidebar}
+        aria-label="Toggle navigation"
+      >
+        <Menu size={20} />
+      </button>
+
       {/* Sidebar */}
       <div 
-        className={`h-screen transition-all duration-300 ease-in-out flex flex-col justify-between p-4 ${
-          isMobileSidebarCollapsed ? "w-20" : "w-64"
-        } ${isDark ? "bg-neutral-950 text-white" : "bg-white text-black"}`}
+        className={`fixed md:relative h-screen ${bgColor} ${textColor} shadow-lg transition-all duration-300 ease-in-out z-30 flex flex-col
+          ${isMobile 
+            ? isOpen ? 'left-0' : '-left-full'
+            : collapsed ? 'w-20' : 'w-64'
+          }`}
       >
-        {/* Top section - Logo */}
-        <div>
-          <div className={`flex ${isMobileSidebarCollapsed ? "flex-col items-center" : "flex-row items-baseline"}`}>
-            <div className="logo-container">
-              {isMobileSidebarCollapsed ? (
-                <img
-                  src={LogoMobile}
-                  alt="TJ Logo"
-                  className="mr-4 mt-2"
-                />
-              ) : (
-                <img
-                  src={Logo}
-                  alt="The Journal Logo"
-                  className="mr-4 mt-2 ml-2"
-                />
-              )}
+        {/* Close Button (Mobile) */}
+        {isMobile && (
+          <button 
+            className="absolute top-4 right-4 p-1 rounded-full bg-opacity-20 bg-gray-500"
+            onClick={() => setIsOpen(false)}
+            aria-label="Close navigation"
+          >
+            <X size={20} />
+          </button>
+        )}
+
+        {/* Desktop Toggle Button */}
+        {!isMobile && (
+          <button 
+            className={`absolute -right-3 top-20 p-1.5 rounded-full shadow-md ${isDark ? 'bg-gray-800 text-gray-300' : 'bg-white text-gray-600'}`}
+            onClick={toggleSidebar}
+            aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
+          >
+            {collapsed ? <ChevronRight size={14} /> : <ChevronLeft size={14} />}
+          </button>
+        )}
+
+        {/* Logo */}
+        <div className={`flex items-center justify-center py-6`}>
+          {collapsed ? (
+            <img 
+              src={Img2} 
+              alt="JOT Logo" 
+              className="w-10 h-10 rounded-full shadow-md object-cover"
+            />
+          ) : (
+            <div className="flex items-center">
+              <img 
+                src={Img2} 
+                alt="JOT Logo" 
+                className="w-10 h-10 rounded-full shadow-md object-cover"
+              />
             </div>
-          </div>
-
-          {/* Menu Items */}
-          <div className={`mt-8 ${isDark ? "text-white" : "text-black"}`}>
-            <ul>
-              {/* Home */}
-              <li className="mb-2">
-                <Link 
-                  to="/" 
-                  className={`flex items-center h-12 px-4 rounded-xl ${
-                    isActive("/") 
-                      ? isDark 
-                        ? "bg-neutral-800 text-white" 
-                        : "bg-gray-200 text-black"
-                      : "hover:bg-gray-100 dark:hover:bg-neutral-800"
-                  }`}
-                >
-                  <FaHome className="text-lg" />
-                  {!isMobileSidebarCollapsed && <span className="ml-4">Home</span>}
-                </Link>
-              </li>
-
-              {/* Trade Log */}
-              <li className="mb-2">
-                <Link 
-                  to="/addtrade" 
-                  className={`flex items-center h-12 px-4 rounded-xl ${
-                    isActive("/addtrade") 
-                      ? isDark 
-                        ? "bg-neutral-800 text-white" 
-                        : "bg-gray-200 text-black"
-                      : "hover:bg-gray-100 dark:hover:bg-neutral-800"
-                  }`}
-                >
-                  <FaBook className="text-lg" />
-                  {!isMobileSidebarCollapsed && <span className="ml-4">Trade Log</span>}
-                </Link>
-              </li>
-
-              {/* Statistics */}
-              <li className="mb-2">
-                <Link 
-                  to="/statistics" 
-                  className={`flex items-center h-12 px-4 rounded-xl ${
-                    isActive("/statistics") 
-                      ? isDark 
-                        ? "bg-neutral-800 text-white" 
-                        : "bg-gray-200 text-black"
-                      : "hover:bg-gray-100 dark:hover:bg-neutral-800"
-                  }`}
-                >
-                  <FaChartLine className="text-lg" />
-                  {!isMobileSidebarCollapsed && <span className="ml-4">Statistics</span>}
-                </Link>
-              </li>
-            </ul>
-
-            {/* Additional options */}
-            <div className="mt-12 pt-4 border-t border-gray-200 dark:border-neutral-800">
-              <ul>
-                {/* Dark/Light Mode Toggle */}
-                <li className="mb-2">
-                  <button 
-                    onClick={toggleDark} 
-                    className="flex items-center w-full h-12 px-4 rounded-xl hover:bg-gray-100 dark:hover:bg-neutral-800"
-                  >
-                    {isDark ? <FaSun className="text-lg" /> : <FaMoon className="text-lg" />}
-                    {!isMobileSidebarCollapsed && (
-                      <span className="ml-4">{isDark ? "Light Mode" : "Dark Mode"}</span>
-                    )}
-                  </button>
-                </li>
-
-                {/* Help */}
-                <li className="mb-2">
-                  <button 
-                    className="flex items-center w-full h-12 px-4 rounded-xl hover:bg-gray-100 dark:hover:bg-neutral-800"
-                  >
-                    <FaQuestionCircle className="text-lg" />
-                    {!isMobileSidebarCollapsed && <span className="ml-4">Help</span>}
-                  </button>
-                </li>
-
-                {/* Settings */}
-                <li className="mb-2">
-                  <button 
-                    onClick="/setting" 
-                    className="flex items-center w-full h-12 px-4 rounded-xl hover:bg-gray-100 dark:hover:bg-neutral-800"
-                  >
-                    <FaCog className="text-lg" />
-                    {!isMobileSidebarCollapsed && <span className="ml-4">Settings</span>}
-                  </button>
-                </li>
-              </ul>
-            </div>
-          </div>
+          )}
         </div>
 
-        {/* Bottom section - User info */}
-        <div className="mt-auto">
-          <div className={`flex items-center p-4 rounded-xl ${isDark ? "bg-neutral-900" : "bg-gray-100"}`}>
-            <div className={`w-10 h-10 rounded-full bg-orange-600 text-white flex items-center justify-center font-bold text-lg flex-shrink-0 ${isDark ? "border border-neutral-700" : "border border-gray-300"}`}>
-              {getAvatarLabel()}
-            </div>
-            {!isMobileSidebarCollapsed && (
-              <div className="ml-3 transition-opacity duration-300">
-                <div className="font-bold">{userFullName}</div>
-                <div className="text-sm text-gray-600 dark:text-gray-400">{userRole}</div>
-              </div>
+        {/* Search Bar */}
+        <div className={`px-4 py-2`}>
+          <div className="relative">
+            <span className="absolute inset-y-0 left-0 flex items-center pl-3">
+              <Search size={16} className={iconColor} />
+            </span>
+            {!collapsed && (
+              <input
+                type="text"
+                placeholder="Search..."
+                className={`w-full py-2 pl-10 pr-4 ${inputBgColor} rounded-lg text-sm ${inputTextColor} focus:outline-none focus:ring-1 focus:ring-blue-500 transition-all`}
+              />
+            )}
+            {collapsed && (
+              <button className={`w-full flex justify-center py-2 ${inputBgColor} rounded-lg`}>
+                <Search size={18} className={iconColor} />
+              </button>
             )}
           </div>
         </div>
-      </div>
 
-      {/* Main content container */}
-      <div className="flex-1 min-h-screen">
-        {/* Your page content would go here */}
+        {/* Menu Items - Main navigation */}
+        <div className="flex-grow px-3 py-6">
+          <ul className="space-y-1">
+            {menuItems.map((item, index) => (
+              <li key={index}>
+                <a
+                  href="#"
+                  className={`flex items-center px-3 py-2.5 rounded-lg transition-all duration-200 ${
+                    item.active
+                      ? 'bg-blue-600 text-white shadow-md'
+                      : `${isDark ? 'text-gray-300' : 'text-gray-600'} ${hoverBgColor} hover:text-${isDark ? 'white' : 'gray-900'}`
+                  }`}
+                >
+                  <span className="flex items-center justify-center">{item.icon}</span>
+                  {!collapsed && <span className="ml-3 font-medium">{item.title}</span>}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        {/* Secondary Navigation and Settings */}
+        <div className="px-3 py-2">
+          {/* Theme Toggle */}
+          <button 
+            className={`flex items-center justify-center ${!collapsed ? 'w-full' : ''} px-3 py-2.5 rounded-lg ${hoverBgColor} transition-colors duration-200 mb-2`}
+            onClick={toggleTheme}
+            aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
+          >
+            <span className="flex items-center justify-center text-blue-400">
+              {isDark ? <Sun size={18} /> : <Moon size={18} />}
+            </span>
+            {!collapsed && <span className="ml-3 font-medium">{isDark ? 'Light Mode' : 'Dark Mode'}</span>}
+          </button>
+
+          {/* Settings & Help */}
+          <ul className="space-y-1">
+            {bottomItems.map((item, index) => (
+              <li key={index}>
+                <a
+                  href="#"
+                  className={`flex items-center px-3 py-2.5 rounded-lg ${isDark ? 'text-gray-300' : 'text-gray-600'} ${hoverBgColor} hover:text-${isDark ? 'white' : 'gray-900'} transition-colors duration-200`}
+                >
+                  <span className="flex items-center justify-center">{item.icon}</span>
+                  {!collapsed && <span className="ml-3 font-medium">{item.title}</span>}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        {/* User Profile - Updated as requested */}
+        <div className="mt-auto px-3 py-4">
+          {/* For desktop and expanded view */}
+          {!collapsed && !isMobile && (
+            <div className="flex items-center p-2 mt-4 space-x-4">
+              <img
+                src={Img1}
+                alt="User Profile"
+                className="w-12 h-12 rounded-lg object-cover"
+              />
+              <div>
+                <h2 className="text-lg font-semibold">John Doe</h2>
+                <span className="flex items-center space-x-1">
+                  <a rel="noopener noreferrer" href="#" className={`text-xs hover:underline ${linkColor}`}>View profile</a>
+                </span>
+              </div>
+            </div>
+          )}
+          
+          {/* For collapsed sidebar on desktop */}
+          {collapsed && !isMobile && (
+            <div className="flex justify-center p-2 mt-4">
+              <img
+                src={Img1}
+                alt="User Profile"
+                className="w-12 h-12 rounded-lg object-cover"
+              />
+            </div>
+          )}
+          
+          {/* For mobile view */}
+          {isMobile && (
+            <div className="flex justify-center p-2 mt-4">
+              <img
+                src={Img1}
+                alt="User Profile"
+                className="w-12 h-12 rounded-lg object-cover"
+              />
+            </div>
+          )}
+        </div>
       </div>
-    </div>
+    </>
   );
-}
+};
 
 export default Navigation;
