@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { 
-  Search, Home, ChartBar, Users, FileText, Settings, 
-  HelpCircle, LogOut, Menu, X, Moon, Sun, ChevronLeft, ChevronRight
+  Search, Home, Settings, 
+  HelpCircle, Menu, X, Moon, Sun, ChevronLeft, ChevronRight,
+  PlusCircle, BookOpen, Wallet, Bot
 } from 'lucide-react';
 import Img1 from '../../assets/profile.jpg';
 import Img2 from '../../assets/newLogo.png';
@@ -50,11 +51,11 @@ const Navigation = () => {
 
   const menuItems = [
     { icon: <Home size={20} />, title: 'Dashboard', active: true },
-    { icon: <ChartBar size={20} />, title: 'Analytics' },
-    { icon: <Users size={20} />, title: 'Customers' },
-    { icon: <FileText size={20} />, title: 'Reports' },
+    { icon: <PlusCircle size={20} />, title: 'Add Trade' },
+    { icon: <BookOpen size={20} />, title: 'Log Trade' },
+    { icon: <Wallet size={20} />, title: 'Trading Account' },
+    { icon: <Bot size={20} />, title: 'Trading Bot' },
   ];
-
   const bottomItems = [
     { icon: <Settings size={20} />, title: 'Settings' },
     { icon: <HelpCircle size={20} />, title: 'Help Center' },
@@ -63,12 +64,14 @@ const Navigation = () => {
   // Conditional classes based on theme
   const bgColor = isDark ? 'bg-gray-900' : 'bg-white';
   const textColor = isDark ? 'text-white' : 'text-gray-800';
-  // const borderColor = isDark ? 'border-gray-800' : 'border-gray-100';
   const inputBgColor = isDark ? 'bg-gray-800' : 'bg-gray-50';
   const inputTextColor = isDark ? 'text-gray-300' : 'text-gray-600';
   const hoverBgColor = isDark ? 'hover:bg-gray-800' : 'hover:bg-gray-50';
   const iconColor = isDark ? 'text-gray-400' : 'text-gray-500';
   const linkColor = isDark ? 'text-gray-400 hover:text-blue-400' : 'text-gray-500 hover:text-blue-600';
+
+  // Common icon container class for consistent alignment
+  const iconContainerClass = collapsed ? "w-full flex justify-center" : "w-6 flex justify-center";
 
   return (
     <>
@@ -120,36 +123,28 @@ const Navigation = () => {
         )}
 
         {/* Logo */}
-        <div className={`flex items-center justify-center py-6`}>
-          {collapsed ? (
-            <img 
-              src={Img2} 
-              alt="JOT Logo" 
-              className="w-10 h-10 rounded-full shadow-md object-cover"
-            />
-          ) : (
-            <div className="flex items-center">
-              <img 
-                src={Img2} 
-                alt="JOT Logo" 
-                className="w-10 h-10 rounded-full shadow-md object-cover"
-              />
-            </div>
-          )}
+        <div className="flex items-center justify-center py-6">
+          <img 
+            src={Img2} 
+            alt="JOT Logo" 
+            className="w-10 h-10 rounded-full shadow-md object-cover"
+          />
         </div>
 
         {/* Search Bar */}
-        <div className={`px-4 py-2`}>
+        <div className="px-4 py-2">
           <div className="relative">
-            <span className="absolute inset-y-0 left-0 flex items-center pl-3">
-              <Search size={16} className={iconColor} />
-            </span>
             {!collapsed && (
-              <input
-                type="text"
-                placeholder="Search..."
-                className={`w-full py-2 pl-10 pr-4 ${inputBgColor} rounded-lg text-sm ${inputTextColor} focus:outline-none focus:ring-1 focus:ring-blue-500 transition-all`}
-              />
+              <>
+                <span className="absolute inset-y-0 left-0 flex items-center pl-3">
+                  <Search size={16} className={iconColor} />
+                </span>
+                <input
+                  type="text"
+                  placeholder="Search..."
+                  className={`w-full py-2 pl-10 pr-4 ${inputBgColor} rounded-lg text-sm ${inputTextColor} focus:outline-none focus:ring-1 focus:ring-blue-500 transition-all`}
+                />
+              </>
             )}
             {collapsed && (
               <button className={`w-full flex justify-center py-2 ${inputBgColor} rounded-lg`}>
@@ -172,7 +167,9 @@ const Navigation = () => {
                       : `${isDark ? 'text-gray-300' : 'text-gray-600'} ${hoverBgColor} hover:text-${isDark ? 'white' : 'gray-900'}`
                   }`}
                 >
-                  <span className="flex items-center justify-center">{item.icon}</span>
+                  <div className={iconContainerClass}>
+                    {item.icon}
+                  </div>
                   {!collapsed && <span className="ml-3 font-medium">{item.title}</span>}
                 </a>
               </li>
@@ -190,7 +187,9 @@ const Navigation = () => {
                   href="#"
                   className={`flex items-center px-3 py-2.5 rounded-lg ${isDark ? 'text-gray-300' : 'text-gray-600'} ${hoverBgColor} hover:text-${isDark ? 'white' : 'gray-900'} transition-colors duration-200`}
                 >
-                  <span className="flex items-center justify-center">{item.icon}</span>
+                  <div className={iconContainerClass}>
+                    {item.icon}
+                  </div>
                   {!collapsed && <span className="ml-3 font-medium">{item.title}</span>}
                 </a>
               </li>
@@ -200,13 +199,13 @@ const Navigation = () => {
 
         {/* Theme Toggle */}
         <button 
-          className={`flex items-center justify-center ${!collapsed ? 'w-full' : ''} px-3 py-2.5 rounded-lg ${hoverBgColor} transition-colors duration-200 mb-2`}
+          className={`flex items-center px-3 py-2.5 rounded-lg ${hoverBgColor} transition-colors duration-200 mb-2 mx-3`}
           onClick={toggleTheme}
           aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
         >
-          <span className="flex items-center justify-center text-blue-400">
-            {isDark ? <Sun size={18} /> : <Moon size={18} />}
-          </span>
+          <div className={iconContainerClass}>
+            {isDark ? <Sun size={18} className="text-blue-400" /> : <Moon size={18} className="text-blue-400" />}
+          </div>
           {!collapsed && <span className="ml-3 font-medium">{isDark ? 'Light Mode' : 'Dark Mode'}</span>}
         </button>
 
@@ -229,19 +228,8 @@ const Navigation = () => {
             </div>
           )}
           
-          {/* For collapsed sidebar on desktop */}
-          {collapsed && !isMobile && (
-            <div className="flex justify-center p-2 mt-4">
-              <img
-                src={Img1}
-                alt="User Profile"
-                className="w-12 h-12 rounded-lg object-cover"
-              />
-            </div>
-          )}
-          
-          {/* For mobile view */}
-          {isMobile && (
+          {/* For collapsed sidebar on desktop or mobile */}
+          {(collapsed || isMobile) && (
             <div className="flex justify-center p-2 mt-4">
               <img
                 src={Img1}
