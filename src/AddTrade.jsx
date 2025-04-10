@@ -102,6 +102,7 @@ const TradeInputForm = (props) => {
       comments: document.getElementById("comments").value,
       tags: document.getElementById("tags").value,
       tradeLink: document.getElementById("tradeLinks").value,
+      riskReward:document.getElementById("riskReward").value,
     }
   };
     return tradeData;
