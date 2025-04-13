@@ -1,3 +1,4 @@
+
 // import Header from "./Header";
 // import Body from "./Body";
 // import Navigation from "./components/NavBar/navbar.jsx";
@@ -11,6 +12,7 @@ function App() {
     <div>
       <Home/>
     </div>
+
   );
 }
 
