@@ -1,19 +1,32 @@
-import React, { useState, useEffect } from 'react';
-import PropTypes from 'prop-types';
-import { 
-  Search, Home, Settings, 
-  HelpCircle, Menu, X, Moon, Sun, ChevronLeft, ChevronRight,
-  BarChart2, BookOpen, Wallet, Bot
-} from 'lucide-react';
-import Img1 from '../../assets/profile.jpg';
-import Img2 from '../../assets/newLogo.png';
+import React, { useState, useEffect, act } from "react";
+import PropTypes from "prop-types";
+import {
+  Search,
+  Home,
+  Settings,
+  HelpCircle,
+  Menu,
+  X,
+  Moon,
+  Sun,
+  ChevronLeft,
+  ChevronRight,
+  BarChart2,
+  BookOpen,
+  Wallet,
+  Bot,
+} from "lucide-react";
+import Img1 from "../../assets/profile.jpg";
+import Img2 from "../../assets/newLogo.png";
 
-const Navigation = ({ onToggle , onUpdate}) => {
+import { Link } from "react-router-dom";
+
+const Navigation = ({ onToggle, onUpdate }) => {
   const [collapsed, setCollapsed] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const [isDark, setIsDark] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
-
+  const [active, setActive] = useState(false);
   // Check if screen is mobile size on mount and when window resizes
   useEffect(() => {
     const checkScreenSize = () => {
@@ -28,12 +41,12 @@ const Navigation = ({ onToggle , onUpdate}) => {
 
     // Initial check
     checkScreenSize();
-    
+
     // Add event listener
-    window.addEventListener('resize', checkScreenSize);
-    
+    window.addEventListener("resize", checkScreenSize);
+
     // Clean up
-    return () => window.removeEventListener('resize', checkScreenSize);
+    return () => window.removeEventListener("resize", checkScreenSize);
   }, []);
 
   useEffect(() => {
@@ -48,10 +61,9 @@ const Navigation = ({ onToggle , onUpdate}) => {
       onToggle(collapsed);
     }
 
-    
     // Also dispatch a custom event for components that might not have direct prop access
-    const event = new CustomEvent('sidebarToggle', { 
-      detail: { collapsed: collapsed }
+    const event = new CustomEvent("sidebarToggle", {
+      detail: { collapsed: collapsed },
     });
     window.dispatchEvent(event);
   }, [collapsed, onToggle]);
@@ -67,38 +79,52 @@ const Navigation = ({ onToggle , onUpdate}) => {
   const toggleTheme = () => {
     setIsDark(!isDark);
     // In a real app, you would also update the document class or CSS variables
-    document.documentElement.classList.toggle('dark');
+    document.documentElement.classList.toggle("dark");
   };
 
   const menuItems = [
-    { icon: <Home size={20} />, title: 'Dashboard', active: true },
-    { icon: <BookOpen size={20} />, title: 'Trades' },
-    { icon: <Wallet size={20} />, title: 'Accounts' },
-    { icon: <BarChart2 size={20} />, title: 'Analysis' },
-    { icon: <Bot size={20} />, title: 'Bot' },
+    { icon: <Home size={20} />, title: "Dashboard", active: true, link: "/" },
+    {
+      icon: <BookOpen size={20} />,
+      title: "Trades",
+      link: "./Trades/AddTrade2.jsx",
+    },
+    { icon: <Wallet size={20} />, title: "Accounts", link: "/add-trade" },
+    {
+      icon: <BarChart2 size={20} />,
+      title: "Analysis",
+      link: "./Trades/AddTrade2.jsx",
+    },
+    { icon: <Bot size={20} />, title: "Bot", link: "./Trades/AddTrade2.jsx" },
   ];
   const bottomItems = [
-    { icon: <Settings size={20} />, title: 'Settings' },
-    { icon: <HelpCircle size={20} />, title: 'Help Center' },
+    { icon: <Settings size={20} />, title: "Settings" },
+    { icon: <HelpCircle size={20} />, title: "Help Center" },
   ];
 
   // Conditional classes based on theme
-  const bgColor = isDark ? 'bg-gray-900' : 'bg-white';
-  const textColor = isDark ? 'text-white' : 'text-gray-800';
-  const inputBgColor = isDark ? 'bg-gray-800' : 'bg-gray-50';
-  const inputTextColor = isDark ? 'text-gray-300' : 'text-gray-600';
-  const hoverBgColor = isDark ? 'hover:bg-gray-800' : 'hover:bg-gray-50';
-  const iconColor = isDark ? 'text-gray-400' : 'text-gray-500';
-  const linkColor = isDark ? 'text-gray-400 hover:text-blue-400' : 'text-gray-500 hover:text-blue-600';
+  const bgColor = isDark ? "bg-gray-900" : "bg-white";
+  const textColor = isDark ? "text-white" : "text-gray-800";
+  const inputBgColor = isDark ? "bg-gray-800" : "bg-gray-50";
+  const inputTextColor = isDark ? "text-gray-300" : "text-gray-600";
+  const hoverBgColor = isDark ? "hover:bg-gray-800" : "hover:bg-gray-50";
+  const iconColor = isDark ? "text-gray-400" : "text-gray-500";
+  const linkColor = isDark
+    ? "text-gray-400 hover:text-blue-400"
+    : "text-gray-500 hover:text-blue-600";
 
   // Common icon container class for consistent alignment
-  const iconContainerClass = collapsed ? "w-full flex justify-center" : "w-6 flex justify-center";
+  const iconContainerClass = collapsed
+    ? "w-full flex justify-center"
+    : "w-6 flex justify-center";
 
   return (
     <>
       {/* Mobile Toggle Button */}
-      <button 
-        className={`fixed top-4 left-4 z-30 md:hidden p-2 rounded-full shadow-md ${isDark ? 'bg-gray-800 text-white' : 'bg-white text-gray-800'}`}
+      <button
+        className={`fixed top-4 left-4 z-30 md:hidden p-2 rounded-full shadow-md ${
+          isDark ? "bg-gray-800 text-white" : "bg-white text-gray-800"
+        }`}
         onClick={toggleSidebar}
         aria-label="Toggle navigation"
       >
@@ -106,16 +132,21 @@ const Navigation = ({ onToggle , onUpdate}) => {
       </button>
 
       {/* Sidebar - Desktop and Mobile */}
-      <div 
+      <div
         className={`fixed h-screen ${bgColor} ${textColor} shadow-lg transition-all duration-300 ease-in-out z-30 flex flex-col
-          ${isMobile 
-            ? isOpen ? 'inset-0 w-full' : '-left-full w-full'
-            : collapsed ? 'w-20 left-0' : 'w-64 left-0'
+          ${
+            isMobile
+              ? isOpen
+                ? "inset-0 w-full"
+                : "-left-full w-full"
+              : collapsed
+              ? "w-20 left-0"
+              : "w-64 left-0"
           }`}
       >
         {/* Close Button (Mobile) */}
         {isMobile && (
-          <button 
+          <button
             className="absolute top-4 right-4 p-2 rounded-full bg-opacity-20 bg-gray-500"
             onClick={() => setIsOpen(false)}
             aria-label="Close navigation"
@@ -126,8 +157,10 @@ const Navigation = ({ onToggle , onUpdate}) => {
 
         {/* Desktop Toggle Button */}
         {!isMobile && (
-          <button 
-            className={`absolute -right-3 top-20 p-1.5 rounded-full shadow-md ${isDark ? 'bg-gray-800 text-gray-300' : 'bg-white text-gray-600'}`}
+          <button
+            className={`absolute -right-3 top-20 p-1.5 rounded-full shadow-md ${
+              isDark ? "bg-gray-800 text-gray-300" : "bg-white text-gray-600"
+            }`}
             onClick={toggleSidebar}
             aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
           >
@@ -137,9 +170,9 @@ const Navigation = ({ onToggle , onUpdate}) => {
 
         {/* Logo */}
         <div className="flex items-center justify-center py-6">
-          <img 
-            src={Img2} 
-            alt="JOT Logo" 
+          <img
+            src={Img2}
+            alt="JOT Logo"
             className="w-10 h-10 rounded-full shadow-md object-cover"
           />
         </div>
@@ -160,33 +193,146 @@ const Navigation = ({ onToggle , onUpdate}) => {
               </>
             )}
             {collapsed && !isMobile && (
-              <button className={`w-full flex justify-center py-2 ${inputBgColor} rounded-lg`}>
+              <button
+                className={`w-full flex justify-center py-2 ${inputBgColor} rounded-lg`}
+              >
                 <Search size={18} className={iconColor} />
               </button>
             )}
           </div>
         </div>
 
+
         {/* Menu Items - Main navigation */}
         <div className="flex-grow px-3 py-6">
           <ul className="space-y-2">
-            {menuItems.map((item, index) => (
-              <li key={index}>
-                <a
-                  href="#"
-                  className={`flex items-center px-3 py-3 rounded-lg transition-all duration-200 ${
-                    item.active
-                      ? 'bg-blue-600 text-white shadow-md'
-                      : `${isDark ? 'text-gray-300' : 'text-gray-600'} ${hoverBgColor} hover:text-${isDark ? 'white' : 'gray-900'}`
-                  }`}
+            <li>
+              <Link
+                to="/"
+                className={`flex items-center px-3 py-3 rounded-lg transition-all duration-200 ${
+                  active
+                    ? "bg-blue-600 text-white shadow-md"
+                    : `${
+                        isDark ? "text-gray-300" : "text-gray-600"
+                      } ${hoverBgColor} hover:text-${
+                        isDark ? "white" : "gray-900"
+                      }`
+                }`}
+              >
+                <div
+                  className={
+                    isMobile ? "w-6 flex justify-center" : iconContainerClass
+                  }
                 >
-                  <div className={isMobile ? "w-6 flex justify-center" : iconContainerClass}>
-                    {item.icon}
-                  </div>
-                  {(!collapsed || isMobile) && <span className="ml-3 font-medium">{item.title}</span>}
-                </a>
-              </li>
-            ))}
+                  <Home size={20} className={iconColor} />
+                </div>
+                {(!collapsed || isMobile) && (
+                  <span className="ml-3 font-medium">Dashboard</span>
+                )}
+              </Link>
+              <li>
+              <Link
+                to="trades"
+                className={`flex items-center px-3 py-3 rounded-lg transition-all duration-200 ${
+                  active
+                    ? "bg-blue-600 text-white shadow-md"
+                    : `${
+                        isDark ? "text-gray-300" : "text-gray-600"
+                      } ${hoverBgColor} hover:text-${
+                        isDark ? "white" : "gray-900"
+                      }`
+                }`}
+              >
+                <div
+                  className={
+                    isMobile ? "w-6 flex justify-center" : iconContainerClass
+                  }
+                >
+                  <BarChart2 size={20} />
+                  
+                </div>
+                {(!collapsed || isMobile) && (
+                  <span className="ml-3 font-medium">Trades</span>
+                )}
+              </Link>
+            </li>
+            <li>
+              <Link
+                to="/"
+                className={`flex items-center px-3 py-3 rounded-lg transition-all duration-200 ${
+                  active
+                    ? "bg-blue-600 text-white shadow-md"
+                    : `${
+                        isDark ? "text-gray-300" : "text-gray-600"
+                      } ${hoverBgColor} hover:text-${
+                        isDark ? "white" : "gray-900"
+                      }`
+                }`}
+              >
+                <div
+                  className={
+                    isMobile ? "w-6 flex justify-center" : iconContainerClass
+                  }
+                >
+                  <Home size={20} className={iconColor} />
+                </div>
+                {(!collapsed || isMobile) && (
+                  <span className="ml-3 font-medium">Accounts</span>
+                )}
+              </Link>
+            </li>
+            <li>
+              <Link
+                to="/"
+                className={`flex items-center px-3 py-3 rounded-lg transition-all duration-200 ${
+                  active
+                    ? "bg-blue-600 text-white shadow-md"
+                    : `${
+                        isDark ? "text-gray-300" : "text-gray-600"
+                      } ${hoverBgColor} hover:text-${
+                        isDark ? "white" : "gray-900"
+                      }`
+                }`}
+              >
+                <div
+                  className={
+                    isMobile ? "w-6 flex justify-center" : iconContainerClass
+                  }
+                >
+                  <BarChart2 size={20} />
+                </div>
+                {(!collapsed || isMobile) && (
+                  <span className="ml-3 font-medium">Analysis</span>
+                )}
+              </Link>
+            </li>
+            <li>
+              <Link
+                to="/"
+                className={`flex items-center px-3 py-3 rounded-lg transition-all duration-200 ${
+                  active
+                    ? "bg-blue-600 text-white shadow-md"
+                    : `${
+                        isDark ? "text-gray-300" : "text-gray-600"
+                      } ${hoverBgColor} hover:text-${
+                        isDark ? "white" : "gray-900"
+                      }`
+                }`}
+              >
+                <div
+                  className={
+                    isMobile ? "w-6 flex justify-center" : iconContainerClass
+                  }
+                >
+                   <Bot size={20} />
+                </div>
+                {(!collapsed || isMobile) && (
+                  <span className="ml-3 font-medium">Bot</span>
+                )}
+              </Link>
+            </li>
+            
+            </li>
           </ul>
         </div>
 
@@ -198,12 +344,22 @@ const Navigation = ({ onToggle , onUpdate}) => {
               <li key={index}>
                 <a
                   href="#"
-                  className={`flex items-center px-3 py-3 rounded-lg ${isDark ? 'text-gray-300' : 'text-gray-600'} ${hoverBgColor} hover:text-${isDark ? 'white' : 'gray-900'} transition-colors duration-200`}
+                  className={`flex items-center px-3 py-3 rounded-lg ${
+                    isDark ? "text-gray-300" : "text-gray-600"
+                  } ${hoverBgColor} hover:text-${
+                    isDark ? "white" : "gray-900"
+                  } transition-colors duration-200`}
                 >
-                  <div className={isMobile ? "w-6 flex justify-center" : iconContainerClass}>
+                  <div
+                    className={
+                      isMobile ? "w-6 flex justify-center" : iconContainerClass
+                    }
+                  >
                     {item.icon}
                   </div>
-                  {(!collapsed || isMobile) && <span className="ml-3 font-medium">{item.title}</span>}
+                  {(!collapsed || isMobile) && (
+                    <span className="ml-3 font-medium">{item.title}</span>
+                  )}
                 </a>
               </li>
             ))}
@@ -211,15 +367,27 @@ const Navigation = ({ onToggle , onUpdate}) => {
         </div>
 
         {/* Theme Toggle */}
-        <button 
+        <button
           className={`flex items-center px-3 py-3 rounded-lg ${hoverBgColor} transition-colors duration-200 mb-2 mx-3 bg-blue-600 text-white shadow-md`}
           onClick={toggleTheme}
           aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
         >
-          <div className={isMobile ? "w-6 flex justify-center" : iconContainerClass}>
-            {isDark ? <Moon size={18} className="text-gray-500" /> : <Sun size={18} className="text-orange-600" />}
+          <div
+            className={
+              isMobile ? "w-6 flex justify-center" : iconContainerClass
+            }
+          >
+            {isDark ? (
+              <Moon size={18} className="text-gray-500" />
+            ) : (
+              <Sun size={18} className="text-orange-600" />
+            )}
           </div>
-          {(!collapsed || isMobile) && <span className="ml-3 font-medium text-gray-300">{isDark ? 'Dark Mode' : 'Light Mode'}</span>}
+          {(!collapsed || isMobile) && (
+            <span className="ml-3 font-medium text-gray-300">
+              {isDark ? "Dark Mode" : "Light Mode"}
+            </span>
+          )}
         </button>
 
         {/* User Profile*/}
@@ -235,12 +403,17 @@ const Navigation = ({ onToggle , onUpdate}) => {
               <div>
                 <h2 className="text-lg font-semibold">John Doe</h2>
                 <span className="flex items-center space-x-1">
-                  <button className={`text-xs hover:underline ${linkColor}`} onClick={() => console.log('View profile clicked')}>john.doe@example.com</button>
+                  <button
+                    className={`text-xs hover:underline ${linkColor}`}
+                    onClick={() => console.log("View profile clicked")}
+                  >
+                    john.doe@example.com
+                  </button>
                 </span>
               </div>
             </div>
           )}
-          
+
           {/* For collapsed sidebar on desktop only */}
           {collapsed && !isMobile && (
             <div className="flex justify-center p-2 mt-4">

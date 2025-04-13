@@ -1,8 +1,8 @@
 import React from "react";
 import { useState } from "react";
 import axios from "axios";
-import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
-import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
+
+
 
 const TradeInputForm = (props) => {
   const S3_BUCKET = "tradingpictures";

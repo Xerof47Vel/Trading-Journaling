@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import Navigation from '../navbar/navbar.jsx'
 import Dashboard from '../Dashboard/dashboard.jsx'
+import {Link} from 'react-router-dom'
 
 const Home = () => {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
