@@ -205,6 +205,7 @@ const TradeInputForm = (props) => {
     let images =await getUrls();
     console.log(images);
     const tradeData = {
+
       type: "add_trade",
       body: {
         userId: 1,
@@ -232,6 +233,7 @@ const TradeInputForm = (props) => {
         tradeLink: images.toString().concat(document.getElementById("tradeLinks").value),
       },
     };
+
     return tradeData;
   };
 
