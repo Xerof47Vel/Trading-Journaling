@@ -230,6 +230,7 @@ const Navigation = ({ onToggle, onUpdate }) => {
                   <span className="ml-3 font-medium">Dashboard</span>
                 )}
               </Link>
+            </li>
               <li>
               <Link
                 to="trades"
@@ -332,7 +333,7 @@ const Navigation = ({ onToggle, onUpdate }) => {
               </Link>
             </li>
             
-            </li>
+           
           </ul>
         </div>
 
