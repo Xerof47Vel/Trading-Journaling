@@ -5,7 +5,10 @@ const AddTradeForm = ({ data }) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState(""); // Track form errors
   const [dateError, setDateError] = useState(false); // Track date errors
-  const [profitError, setProfitError] = useState(false); // Track profit/loss errors
+  const [profitError, setProfitError] = useState(false);
+  const accounts = JSON.parse(localStorage.getItem("accounts") || "[]");
+  console.log("accounts", accounts.accounts[0]);
+   // Track profit/loss errors
   const [formData, setFormData] = useState({
     commodity: "",
     openDate: "",
@@ -97,10 +100,10 @@ const AddTradeForm = ({ data }) => {
             className="focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-200 ease-in-out mt-1 w-full px-3 py-2 border border-gray-300 rounded-md"
           >
             <option value="">Select Account</option>
-            {data && data.length > 0 ? (
-              data.map((account, index) => (
+            {accounts.accounts && accounts.accounts.length > 0 ? (
+              accounts.accounts.map((account, index) => (
                 <option key={index} value={account.broker_name}>
-                  {account.broker_name} ({account.account_number})
+                  {account["broker_name"]} ({account["account_number"]})
                 </option>
               ))
             ) : (

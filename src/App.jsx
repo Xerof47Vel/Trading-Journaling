@@ -19,8 +19,9 @@ function App() {
             body: { email: "zhouvel7@gmail.com" },
           }
         );
-        console.log(response.data);
-        setAccounts(response.data.accounts);
+        console.log(response.data.body);
+        const data=JSON.parse(response.data.body);
+        localStorage.setItem("accounts", JSON.stringify(data));
         
         setLoading(false);
       } catch (error) {
@@ -32,12 +33,7 @@ function App() {
   }, []); // Empty dependency array to run only once on mount
 
   // Optional: Add a separate effect to log when accounts change
-  useEffect(() => {
-    if (!loading) {
-      console.log("Accounts fetched successfully:", accounts);
-    }
-  }, [accounts, loading]);
-  
+
   return (
     <Router>
       <Navigation />
@@ -50,7 +46,7 @@ function App() {
             loading ? (
               <div className="p-4 text-center">Loading accounts...</div>
             ) : (
-              <AddTrade2 data={accounts} />
+              <AddTrade2 data />
             )
           }
         />

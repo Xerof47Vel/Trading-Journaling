@@ -1,6 +1,7 @@
 import React from "react";
 import TotalProfit from "./TotalProfit";
 import { useEffect, useState } from "react";
+import axios from "axios";
 import {
   BarChart3,
   TrendingUp,
@@ -19,6 +20,7 @@ import RecentTrades from "./RecentTrades";
 
 const BodyContent = (props) => {
   const [totalTrades, setTotalTrades] = useState();
+  const 
   console.log("props", props);
   const bgColor = props.isDark ? "bg-gray-800" : "bg-white";
   const textColor = props.isDark ? "text-gray-200" : "text-gray-800";
@@ -31,6 +33,8 @@ const BodyContent = (props) => {
   const pageBackground = props.isDark ? "bg-gray-900" : "bg-gray-100";
   const data = props.data.data;
   let trades = [];
+    const [getInfo, setInfo] = useState({ isDark: props.isDark, data: [] });
+    const [loading, setLoading] = useState(true); //// Initialize as an empty array
   console.log("data", data);
   for (let i = 1; i < data.length; i++) {
     trades.push(data[i]);
@@ -40,134 +44,7 @@ const BodyContent = (props) => {
   tradeAndTheme.push(trades);
   tradeAndTheme.push(props.isDark);
 
-  const tradingStats = [
-    {
-      title: "Win Rate (%)",
-      value: "62.4%",
-      change: "+1.8%",
-      isPositive: true,
-      icon: (
-        <TrendingUp
-          size={20}
-          className={props.isDark ? "text-green-400" : "text-green-500"}
-        />
-      ),
-    },
-    {
-      title: "Average Profit/Loss",
-      value: "$142.50",
-      change: "+$7.30",
-      isPositive: true,
-      icon: (
-        <DollarSign
-          size={20}
-          className={props.isDark ? "text-purple-400" : "text-purple-500"}
-        />
-      ),
-    },
-    {
-      title: "Net P&L",
-      value: "$24,780",
-      change: "+18.2%",
-      isPositive: true,
-      icon: (
-        <PieChart
-          size={20}
-          className={props.isDark ? "text-orange-400" : "text-orange-500"}
-        />
-      ),
-    },
-    {
-      title: "Risk-Reward Ratio",
-      value: "2.4:1",
-      change: "+0.3",
-      isPositive: true,
-      icon: (
-        <Scale
-          size={20}
-          className={props.isDark ? "text-yellow-400" : "text-yellow-500"}
-        />
-      ),
-    },
-    {
-      title: "Max Drawdown",
-      value: "-$3,850",
-      change: "-$650",
-      isPositive: false,
-      icon: (
-        <TrendingDown
-          size={20}
-          className={props.isDark ? "text-red-400" : "text-red-500"}
-        />
-      ),
-    },
-    {
-      title: "Average Holding Time",
-      value: "3.2 days",
-      change: "-0.5 days",
-      isPositive: true,
-      icon: (
-        <Clock
-          size={20}
-          className={props.isDark ? "text-cyan-400" : "text-cyan-500"}
-        />
-      ),
-    },
-    {
-      title: "Best/Worst Trade",
-      value: "+$1,240 / -$680",
-      icon: (
-        <LineChart
-          size={20}
-          className={props.isDark ? "text-indigo-400" : "text-indigo-500"}
-        />
-      ),
-    },
-  ];
-
-  // Mock data for recent trades
-  const recentTrades = [
-    {
-      id: 1,
-      symbol: "AAPL",
-      action: "BUY",
-      price: "$178.42",
-      quantity: "25",
-      time: "2 hours ago",
-      profit: "+$245.50",
-      isPositive: true,
-    },
-    {
-      id: 2,
-      symbol: "MSFT",
-      action: "SELL",
-      price: "$412.65",
-      quantity: "10",
-      time: "4 hours ago",
-      profit: "+$320.80",
-      isPositive: true,
-    },
-    {
-      id: 3,
-      symbol: "TSLA",
-      action: "BUY",
-      price: "$175.28",
-      quantity: "15",
-      time: "1 day ago",
-      profit: "-$125.40",
-      isPositive: false,
-    },
-    {
-      id: 4,
-      symbol: "NVDA",
-      action: "SELL",
-      price: "$925.15",
-      quantity: "5",
-      time: "2 days ago",
-      profit: "+$478.25",
-      isPositive: true,
-    },
-  ];
+  
 
   // Mock data for upcoming market events
   const marketEvents = [
@@ -202,13 +79,87 @@ const BodyContent = (props) => {
   const lastFiveTrades = trades.slice(-5);
   console.log("lastFiveTrades", lastFiveTrades);
   console.log("fhh", lastFiveTrades[0]);
+  const accounts=JSON.parse(localStorage.getItem("accounts"));
 
+  const getDataFromApi = async () => {
+    try {
+        const response = await axios.post(
+            "https://2s33943isc.execute-api.eu-north-1.amazonaws.com/development/getTrades",
+            { type: "get_trades", body: { userId: 1 } }, // Send JSON directly
+            { headers: { "Content-Type": "application/json" } } // Ensure proper headers
+        );
+
+        if (response.status === 200 && response.data.body) {
+            const data= JSON.parse(response.data.body);
+            setInfo((prevInfo) => ({
+              ...prevInfo,
+              data: [...prevInfo.data, ...data.trades],
+            }));
+            console.log("Fetched data:", data.trades);
+            setLoading(false); // Set loading to false after data fetch
+        }
+    } catch (error) {
+        console.error("Error fetching data:", error);
+
+    }
+    finally {
+        setLoading(false); // Set loading to false after data fetch
+    }
+};
+
+// Fetch data only once when component mounts
+useEffect(() => {
+    getDataFromApi();
+}, []);
+
+   const handleAccountChange = async(event) => {
+      try {
+          const response = await axios.post(
+              "https://2s33943isc.execute-api.eu-north-1.amazonaws.com/development/getTrades",
+              { type: "get_trades", body: { email: 1 ,account_number:a} }, // Send JSON directly
+              { headers: { "Content-Type": "application/json" } } // Ensure proper headers
+          );
+
+          if (response.status === 200 && response.data.body) {
+              const data= JSON.parse(response.data.body);
+              setInfo((prevInfo) => ({
+                ...prevInfo,
+                data: [...prevInfo.data, ...data.trades],
+              }));
+              console.log("Fetched data:", data.trades);
+              setLoading(false); // Set loading to false after data fetch
+          }
+      } catch (error) {
+          console.error("Error fetching data:", error);
+      } finally {
+          setLoading(false); // Set loading to false after data fetch
+      }
+   };
   return (
     <div>
       <div className={`w-full h-full p-6 overflow-auto ${pageBackground}`}>
         <h1 className={`text-2xl font-bold ${textColor} mb-6 mt-10 md:mt-0`}>
           Dashboard
         </h1>
+
+        <label htmlFor="accounts">Accounts</label>
+       <select
+            name="account"
+            
+            onChange={handleAccountChange}
+            className="focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-200 ease-in-out mt-1 w-full px-3 py-2 border border-gray-300 rounded-md"
+          >
+            <option value="">Select Account</option>
+            {accounts.accounts && accounts.accounts.length > 0 ? (
+              accounts.accounts.map((account, index) => (
+                <option key={index} value={account.account_number}>
+                  {account["broker_name"]} ({account["account_number"]})
+                </option>
+              ))
+            ) : (
+              <option value="">No accounts available</option>
+            )}
+          </select>
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4 mb-6">
           <TotalProfit
             isDark={props.isDark}
