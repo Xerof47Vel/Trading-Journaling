@@ -82,21 +82,7 @@ const Navigation = ({ onToggle, onUpdate }) => {
     document.documentElement.classList.toggle("dark");
   };
 
-  const menuItems = [
-    { icon: <Home size={20} />, title: "Dashboard", active: true, link: "/" },
-    {
-      icon: <BookOpen size={20} />,
-      title: "Trades",
-      link: "./Trades/AddTrade2.jsx",
-    },
-    { icon: <Wallet size={20} />, title: "Accounts", link: "/add-trade" },
-    {
-      icon: <BarChart2 size={20} />,
-      title: "Analysis",
-      link: "./Trades/AddTrade2.jsx",
-    },
-    { icon: <Bot size={20} />, title: "Bot", link: "./Trades/AddTrade2.jsx" },
-  ];
+
   const bottomItems = [
     { icon: <Settings size={20} />, title: "Settings" },
     { icon: <HelpCircle size={20} />, title: "Help Center" },
@@ -202,13 +188,12 @@ const Navigation = ({ onToggle, onUpdate }) => {
           </div>
         </div>
 
-
         {/* Menu Items - Main navigation */}
         <div className="flex-grow px-3 py-6">
           <ul className="space-y-2">
             <li>
               <Link
-                to="/"
+                to="/home"
                 className={`flex items-center px-3 py-3 rounded-lg transition-all duration-200 ${
                   active
                     ? "bg-blue-600 text-white shadow-md"
@@ -231,7 +216,7 @@ const Navigation = ({ onToggle, onUpdate }) => {
                 )}
               </Link>
             </li>
-              <li>
+            <li>
               <Link
                 to="trades"
                 className={`flex items-center px-3 py-3 rounded-lg transition-all duration-200 ${
@@ -250,7 +235,6 @@ const Navigation = ({ onToggle, onUpdate }) => {
                   }
                 >
                   <BarChart2 size={20} />
-                  
                 </div>
                 {(!collapsed || isMobile) && (
                   <span className="ml-3 font-medium">Trades</span>
@@ -325,15 +309,13 @@ const Navigation = ({ onToggle, onUpdate }) => {
                     isMobile ? "w-6 flex justify-center" : iconContainerClass
                   }
                 >
-                   <Bot size={20} />
+                  <Bot size={20} />
                 </div>
                 {(!collapsed || isMobile) && (
                   <span className="ml-3 font-medium">Bot</span>
                 )}
               </Link>
             </li>
-            
-           
           </ul>
         </div>
 

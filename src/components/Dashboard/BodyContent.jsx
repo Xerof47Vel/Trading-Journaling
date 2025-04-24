@@ -2,6 +2,8 @@ import React from "react";
 import TotalProfit from "./TotalProfit";
 import { useEffect, useState } from "react";
 import axios from "axios";
+import LoadingSkeleton from "./LoadingSkeleton";
+
 import {
   BarChart3,
   TrendingUp,
@@ -10,41 +12,101 @@ import {
   ArrowDown,
   Clock,
   DollarSign,
-  PieChart,
   Scale,
-  LineChart,
   Target,
   AlertCircle,
+  ChartCandlestick,
 } from "lucide-react";
+
+import {
+  ResponsiveContainer,
+  LineChart,
+  CartesianGrid,
+  XAxis,
+  YAxis,
+  Tooltip,
+  Line,
+  PieChart,
+  Pie,
+  Cell,
+  Legend,
+} from "recharts";
+const COLORS = ["#10B981", "#EF4444"];
 import RecentTrades from "./RecentTrades";
+import Select from "react-select";
 
 const BodyContent = (props) => {
-  const [totalTrades, setTotalTrades] = useState();
-  const 
-  console.log("props", props);
+  const [trades, setTrades] = useState([]);
+
   const bgColor = props.isDark ? "bg-gray-800" : "bg-white";
   const textColor = props.isDark ? "text-gray-200" : "text-gray-800";
   const secondaryTextColor = props.isDark ? "text-gray-400" : "text-gray-500";
   const borderColor = props.isDark ? "border-gray-700" : "border-gray-200";
   const dividerColor = props.isDark ? "divide-gray-700" : "divide-gray-100";
   const chartBgColor = props.isDark ? "bg-gray-700" : "bg-gray-50";
-  const chartIconColor = props.isDark ? "text-gray-500" : "text-gray-400";
+
   const hoverBgColor = props.isDark ? "hover:bg-gray-700" : "hover:bg-gray-50";
   const pageBackground = props.isDark ? "bg-gray-900" : "bg-gray-100";
-  const data = props.data.data;
-  let trades = [];
-    const [getInfo, setInfo] = useState({ isDark: props.isDark, data: [] });
-    const [loading, setLoading] = useState(true); //// Initialize as an empty array
-  console.log("data", data);
-  for (let i = 1; i < data.length; i++) {
-    trades.push(data[i]);
-  }
-  const tradeAndTheme = [];
-  console.log("trades", trades);
-  tradeAndTheme.push(trades);
-  tradeAndTheme.push(props.isDark);
+
+  const [selectedAccount, setSelectedAccount] = useState(null);
+
+  const [loading, setLoading] = useState(true); //for the loading state
+  const accounts = JSON.parse(localStorage.getItem("accounts"));
+
+
+  const lastFiveTrades = trades.slice(-5); //for the last five trades
+
+
+  useEffect(() => {
+
+    
+    if(accounts && accounts.length > 0) {
+      // Set default selected account
+      setSelectedAccount({
+        value: accounts[0].account_number,
+        label: (
+          <div className="flex items-center">
+            <ChartCandlestick className="mr-2" size={20} />
+            {accounts[0].broker_name} ({accounts[0].account_number})
+          </div>
+        )
+      });
+      
+      // Get trades for the default account
+      get_trades_from_Selected_Account(accounts[0].account_number);
+    }
+  }, []);
 
   
+  const winLossData = [
+    {
+      name: "Wins",
+      value: trades.filter((t) => t.profit_loss > 0).length,
+    },
+    {
+      name: "Losses",
+      value: trades.filter((t) => t.profit_loss < 0).length,
+    },
+  ];
+
+  const getCumulativeProfitData = () => {
+    const sortedTrades = [...trades].sort(
+      (a, b) => new Date(a.open_date) - new Date(b.open_date)
+    );
+
+    let cumulative = 0;
+    return sortedTrades.map((trade) => {
+      cumulative += trade.profit_loss;
+      return {
+        date: trade.open_date, // using open_date
+        profit: cumulative,
+      };
+    });
+  };
+
+  const profitOverTime = getCumulativeProfitData(trades);
+
+
 
   // Mock data for upcoming market events
   const marketEvents = [
@@ -76,90 +138,83 @@ const BodyContent = (props) => {
 
   // Theme-specific class assignments
 
-  const lastFiveTrades = trades.slice(-5);
-  console.log("lastFiveTrades", lastFiveTrades);
-  console.log("fhh", lastFiveTrades[0]);
-  const accounts=JSON.parse(localStorage.getItem("accounts"));
+  useEffect(() => {
+    if (selectedAccount) {
+      get_trades_from_Selected_Account(selectedAccount.value);
+    }
+  }, [selectedAccount]);
 
-  const getDataFromApi = async () => {
+  const get_trades_from_Selected_Account = async (accountNumber) => {
     try {
-        const response = await axios.post(
-            "https://2s33943isc.execute-api.eu-north-1.amazonaws.com/development/getTrades",
-            { type: "get_trades", body: { userId: 1 } }, // Send JSON directly
-            { headers: { "Content-Type": "application/json" } } // Ensure proper headers
-        );
+      setLoading(true); // Set loading to true when fetching data
+      const response = await axios.post(
+        "https://2s33943isc.execute-api.eu-north-1.amazonaws.com/development/getTrades",
+        {
+          type: "get_trades",
+          body: { email: 1, account_number: accountNumber },
+        },
+        { headers: { "Content-Type": "application/json" } }
+      );
 
-        if (response.status === 200 && response.data.body) {
-            const data= JSON.parse(response.data.body);
-            setInfo((prevInfo) => ({
-              ...prevInfo,
-              data: [...prevInfo.data, ...data.trades],
-            }));
-            console.log("Fetched data:", data.trades);
-            setLoading(false); // Set loading to false after data fetch
-        }
-    } catch (error) {
-        console.error("Error fetching data:", error);
-
-    }
-    finally {
-        setLoading(false); // Set loading to false after data fetch
-    }
-};
-
-// Fetch data only once when component mounts
-useEffect(() => {
-    getDataFromApi();
-}, []);
-
-   const handleAccountChange = async(event) => {
-      try {
-          const response = await axios.post(
-              "https://2s33943isc.execute-api.eu-north-1.amazonaws.com/development/getTrades",
-              { type: "get_trades", body: { email: 1 ,account_number:a} }, // Send JSON directly
-              { headers: { "Content-Type": "application/json" } } // Ensure proper headers
-          );
-
-          if (response.status === 200 && response.data.body) {
-              const data= JSON.parse(response.data.body);
-              setInfo((prevInfo) => ({
-                ...prevInfo,
-                data: [...prevInfo.data, ...data.trades],
-              }));
-              console.log("Fetched data:", data.trades);
-              setLoading(false); // Set loading to false after data fetch
-          }
-      } catch (error) {
-          console.error("Error fetching data:", error);
-      } finally {
-          setLoading(false); // Set loading to false after data fetch
+      if (response.status === 200 && response.data.body) {
+        const data = JSON.parse(response.data.body);
+        setTrades(data.trades); // Update state with new trades
+        setLoading(false);
       }
-   };
+    } catch (error) {
+      console.error("Error fetching trades:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const accountOptions = accounts.map((account) => ({
+    value: account.account_number,
+    label: (
+      <div className="flex items-center">
+        <ChartCandlestick className="mr-2" size={20} /> {/* Icon here */}
+        {account.broker_name} ({account.account_number})
+      </div>
+    ),
+  }));
   return (
+    <>
+    {loading ? (
+      <LoadingSkeleton isDark={props.isDark} />
+    ) : (
     <div>
       <div className={`w-full h-full p-6 overflow-auto ${pageBackground}`}>
         <h1 className={`text-2xl font-bold ${textColor} mb-6 mt-10 md:mt-0`}>
           Dashboard
         </h1>
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4 mb-6">
+          <Select
+            options={accountOptions}
+            className={`react-select-container mb-6  w-xs ${
+              props.isDark ? "dark" : "light"
+            }`}
+            classNamePrefix="react-select"
+            value={selectedAccount}
+            onChange={(selectedOption) => setSelectedAccount(selectedOption)}
+          />
 
-        <label htmlFor="accounts">Accounts</label>
-       <select
-            name="account"
-            
-            onChange={handleAccountChange}
-            className="focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-200 ease-in-out mt-1 w-full px-3 py-2 border border-gray-300 rounded-md"
-          >
-            <option value="">Select Account</option>
-            {accounts.accounts && accounts.accounts.length > 0 ? (
-              accounts.accounts.map((account, index) => (
-                <option key={index} value={account.account_number}>
-                  {account["broker_name"]} ({account["account_number"]})
-                </option>
-              ))
-            ) : (
-              <option value="">No accounts available</option>
-            )}
-          </select>
+          <Select
+            options={accountOptions}
+            className={`react-select-container mb-6  w-xs ${
+              props.isDark ? "dark" : "light"
+            }`}
+            classNamePrefix="react-select"
+          />
+
+          <Select
+            options={accountOptions}
+            className={`react-select-container mb-6  w-xs ${
+              props.isDark ? "dark" : "light"
+            }`}
+            classNamePrefix="react-select"
+          />
+        </div>
+
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4 mb-6">
           <TotalProfit
             isDark={props.isDark}
@@ -205,17 +260,7 @@ useEffect(() => {
             }
             title="Net P&L"
           />
-          <TotalProfit
-            isDark={props.isDark}
-            data={trades}
-            icon={
-              <PieChart
-                size={20}
-                className={props.isDark ? "text-orange-400" : "text-orange-500"}
-              />
-            }
-            title="Risk-Reward Ratio"
-          />
+
           <TotalProfit
             isDark={props.isDark}
             data={trades}
@@ -286,11 +331,26 @@ useEffect(() => {
               </select>
             </div>
             {/* Chart placeholder - same height as Win/Loss Distribution */}
-            <div
-              className={`${chartBgColor} h-64 rounded-md flex items-center justify-center`}
-            >
-              <LineChart size={40} className={chartIconColor} />
-            </div>
+          
+              <div className={`${chartBgColor} h-[300px] rounded-md flex items-center justify-center`}>
+  <ResponsiveContainer width="100%" height="100%">
+    <LineChart data={profitOverTime}>
+      <CartesianGrid strokeDasharray="3 3" />
+      <XAxis dataKey="date" />
+      <YAxis />
+      <Tooltip />
+      <Line
+        type="monotone"
+        dataKey="profit"
+        stroke="#10b981"
+        strokeWidth={3}
+        dot={false}
+      />
+    </LineChart>
+  </ResponsiveContainer>
+</div>
+
+
           </div>
           <div className={`${bgColor} rounded-lg shadow`}>
             <div className={`p-4 border-b ${borderColor}`}>
@@ -301,16 +361,15 @@ useEffect(() => {
             <div
               className={`divide-y ${dividerColor} max-h-56 overflow-y-auto`}
             >
-             
-                {lastFiveTrades.map((trade) => (
-                  <RecentTrades
-                    key={trade.id}
-                    trade={trade}
-                    isDark={props.isDark}
-                  />
-                ))}
-              </div>
-         
+              {lastFiveTrades.map((trade) => (
+                <RecentTrades
+                  key={trade.id}
+                  trade={trade}
+                  isDark={props.isDark}
+                />
+              ))}
+            </div>
+
             <div className={`p-3 border-t ${borderColor}`}>
               <button
                 className={`text-sm ${
@@ -336,7 +395,30 @@ useEffect(() => {
             <div
               className={`${chartBgColor} h-64 rounded-md flex items-center justify-center`}
             >
-              <PieChart size={40} className={chartIconColor} />
+              <PieChart width={400} height={300}>
+                <Pie
+                  innerRadius={60}
+                  outerRadius={100}
+                  data={winLossData}
+                  cx="50%"
+                  cy="50%"
+                  labelLine={false}
+                  label={({ name, percent }) =>
+                    `${name}: ${(percent * 100).toFixed(0)}%`
+                  }
+                  stroke="#fff"
+                  fill="#8884d8"
+                  dataKey="value"
+                >
+                  {winLossData.map((entry, index) => (
+                    <Cell
+                      key={`cell-${index}`}
+                      fill={COLORS[index % COLORS.length]}
+                    />
+                  ))}
+                </Pie>
+                <Tooltip />
+              </PieChart>
             </div>
             <div className="mt-4 grid grid-cols-2 gap-3">
               <div
@@ -350,7 +432,7 @@ useEffect(() => {
                     props.isDark ? "text-green-400" : "text-green-600"
                   }`}
                 >
-                  217
+                  {trades.filter((t) => t.profit_loss > 0).length}
                 </p>
               </div>
               <div
@@ -364,7 +446,7 @@ useEffect(() => {
                     props.isDark ? "text-red-400" : "text-red-600"
                   }`}
                 >
-                  130
+                 {trades.filter((t) => t.profit_loss < 0).length}
                 </p>
               </div>
             </div>
@@ -431,8 +513,11 @@ useEffect(() => {
           </div>
         </div>
       </div>
-    </div>
+    </div>)
+    }
+    </>
   );
+
 };
 
 export default BodyContent;

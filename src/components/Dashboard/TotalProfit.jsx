@@ -31,6 +31,8 @@ const TotalProfit = ({ isDark, data,title,icon }) => {
         let total = 0;
      
          for (let i = 0; i < trades.length; i++) {
+
+            
              total += trades[i].profit_loss;
          }
         return total;
