@@ -42,7 +42,7 @@ const Dashboard = (props) => {
   
       
       } catch (error) {
-  
+        console.error("Error fetching accounts:", error);
       }
     };
 
