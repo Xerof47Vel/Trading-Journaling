@@ -23,8 +23,7 @@ const TotalProfit = ({ isDark, data,title,icon }) => {
     const change=1.2
     const isPositive=true
 
-    console.log("data1",data)
-    console.log("title",title)
+
  
 
     const calculatePL=(trades)=>{

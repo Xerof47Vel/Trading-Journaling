@@ -52,7 +52,50 @@ const BodyContent = (props) => {
 
   const [loading, setLoading] = useState(true); //for the loading state
   const accounts = JSON.parse(localStorage.getItem("accounts"));
-
+  const [dateFilter, setDateFilter] = useState("7");
+  const [filteredTrades, setFilteredTrades] = useState(trades); //for the date filter
+ //for the date filter
+  //for filterring dates
+  useEffect(() => {
+    const filterTradesByDate = () => {
+      const today = new Date();
+      
+      if (dateFilter === "7") {
+        const last7Days = new Date(today);
+        last7Days.setDate(today.getDate() - 7);
+        setFilteredTrades(trades.filter(
+          (trade) => new Date(trade.open_date) >= last7Days
+        ));
+      }
+      else if (dateFilter === "30") {
+        const last7Days = new Date(today);
+        last7Days.setDate(today.getDate() - 30);
+        setFilteredTrades(trades.filter(
+          (trade) => new Date(trade.open_date) >= last7Days
+        ));
+      }
+      else if (dateFilter === "90") {
+        const last7Days = new Date(today);
+        last7Days.setDate(today.getDate() - 90);
+        setFilteredTrades(trades.filter(
+          (trade) => new Date(trade.open_date) >= last7Days
+        ));
+      }
+      else if (dateFilter === "1 year") {
+        console.log("1 year")
+        const last1Year = new Date();
+        last1Year.setFullYear(last1Year.getFullYear() - 1);
+        setFilteredTrades(trades.filter(
+          (trade) => new Date(trade.open_date) >= last1Year
+        ))
+      }
+      else if (dateFilter === "allTime") {
+        setFilteredTrades(trades);
+      }
+      
+    }
+    filterTradesByDate()
+  },[dateFilter, trades]);
 
   const lastFiveTrades = trades.slice(-5); //for the last five trades
 
@@ -89,22 +132,26 @@ const BodyContent = (props) => {
     },
   ];
 
-  const getCumulativeProfitData = () => {
-    const sortedTrades = [...trades].sort(
-      (a, b) => new Date(a.open_date) - new Date(b.open_date)
-    );
+  const [profitOverTime, setProfitOverTime] = useState([]);
 
-    let cumulative = 0;
-    return sortedTrades.map((trade) => {
-      cumulative += trade.profit_loss;
-      return {
-        date: trade.open_date, // using open_date
-        profit: cumulative,
-      };
-    });
-  };
+  useEffect(() => {
+    const getCumulativeProfitData = () => {
+      const sortedTrades = [...filteredTrades].sort(
+        (a, b) => new Date(a.open_date) - new Date(b.open_date)
+      );
 
-  const profitOverTime = getCumulativeProfitData(trades);
+      let cumulative = 0;
+      return sortedTrades.map((trade) => {
+        cumulative += trade.profit_loss;
+        return {
+          date: trade.open_date, // using open_date
+          profit: cumulative,
+        };
+      });
+    };
+
+    setProfitOverTime(getCumulativeProfitData());
+  }, [filteredTrades,trades]);
 
 
 
@@ -324,10 +371,13 @@ const BodyContent = (props) => {
                     ? "bg-gray-700 border-gray-600 text-gray-300"
                     : "bg-white border-gray-300 text-gray-700"
                 }`}
+                onChange={(e)=>setDateFilter(e.target.value)}
               >
-                <option>Last 7 Days</option>
-                <option>Last 30 Days</option>
-                <option>Last 90 Days</option>
+                <option value={"7"}>Last 7 Days</option>
+                <option value={"30"}>Last 30 Days</option>
+                <option value={"90"}>Last 90 Days</option>
+                <option value={"1 year"}>Last 1 Year</option>
+                <option value={"allTime"}>All Time</option>
               </select>
             </div>
             {/* Chart placeholder - same height as Win/Loss Distribution */}

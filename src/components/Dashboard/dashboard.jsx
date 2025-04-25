@@ -23,6 +23,7 @@ const Dashboard = (props) => {
 
 
 
+
   useEffect(() => {
     const getAccounts = async () => {
       try {
@@ -35,13 +36,13 @@ const Dashboard = (props) => {
         );
 
         const data = JSON.parse(response.data.body);
-        console.log("Parsed data:", data.accounts);
+ 
     localStorage.setItem("accounts", JSON.stringify(data.accounts));
 
   
-        console.log("Fetched accounts:", data);
+      
       } catch (error) {
-        console.error("Error fetching accounts:", error);
+  
       }
     };
 
