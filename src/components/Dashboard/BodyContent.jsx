@@ -525,7 +525,7 @@ const BodyContent = (props) => {
               <div className={`${bgColor} rounded-lg shadow`}>
                 <div className={`p-4 border-b ${borderColor}`}>
                   <h2 className={`text-lg font-medium ${textColor}`}>
-                    Upcoming Market Events
+                    Deposits And Withdrawals
                   </h2>
                 </div>
                 <div

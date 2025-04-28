@@ -5,7 +5,10 @@ import Home from "./components/Home/home.jsx";
 import AddTrade2 from "./Pages/Trades/AddTrade2.jsx";
 import Login from "./Pages/Login/Login.jsx";
 import Footer from "./components/Footer/Footer.jsx";
-import { useState } from "react";
+import TradesList from "./Pages/Trades/TradeListView.jsx";
+import TradeDetails from "./Pages/Trades/TradeDetails.jsx";
+
+
 
 function AppWrapper() {
   return (
@@ -29,6 +32,8 @@ function App() {
       <Routes>
         <Route path="/" element={<Login />} />
         <Route path="/home" element={<Home />} />
+        <Route path="/view-trades" element={<TradesList />} />
+        <Route path="view-trade/:id" element={<TradeDetails/>}/>
         <Route
           path="/trades"
           element={

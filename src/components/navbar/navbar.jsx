@@ -218,7 +218,7 @@ const Navigation = ({ onToggle, onUpdate }) => {
             </li>
             <li>
               <Link
-                to="trades"
+                to="/trades"
                 className={`flex items-center px-3 py-3 rounded-lg transition-all duration-200 ${
                   active
                     ? "bg-blue-600 text-white shadow-md"
@@ -243,7 +243,7 @@ const Navigation = ({ onToggle, onUpdate }) => {
             </li>
             <li>
               <Link
-                to="/"
+                to="/view-trades"
                 className={`flex items-center px-3 py-3 rounded-lg transition-all duration-200 ${
                   active
                     ? "bg-blue-600 text-white shadow-md"
