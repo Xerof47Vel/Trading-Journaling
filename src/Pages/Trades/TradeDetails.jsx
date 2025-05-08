@@ -179,11 +179,11 @@ const TradeDetail = () => {
                   {trade.commodity}
                 </h1>
                 <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                  trade.tradeStatus === "open" 
+                  trade.trade_status === "open" 
                     ? "bg-blue-100 text-blue-800" 
                     : "bg-green-100 text-green-800"
                 }`}>
-                  {trade.tradeStatus === "open" ? "OPEN POSITION" : "CLOSED TRADE"}
+                  {trade.trade_status === "open" ? "OPEN POSITION" : "CLOSED TRADE"}
                 </span>
               </div>
               <p className="text-sm text-gray-500 mt-1">
@@ -191,10 +191,10 @@ const TradeDetail = () => {
               </p>
             </div>
             
-            {trade.tradeStatus === "closed" && (
+            {trade.trade_status === "closed" && (
               <div className="mt-4 md:mt-0 flex flex-col items-end">
                 <div className={`text-2xl font-bold ${parseFloat(trade.profitLoss || 0) >= 0 ? "text-green-600" : "text-red-600"}`}>
-                  {parseFloat(trade.profitLoss || 0) >= 0 ? "+" : ""}{parseFloat(trade.profitLoss || 0).toFixed(2)}
+                  {parseFloat(trade.profit_loss || 0) >= 0 ? "+" : ""}{parseFloat(trade.profit_loss || 0).toFixed(2)}
                 </div>
                 <div className="text-sm text-gray-500">
                   {trade.strategy && `Strategy: ${trade.strategy}`}
@@ -216,8 +216,8 @@ const TradeDetail = () => {
               <div className="bg-gray-50 rounded-lg p-4 space-y-3 shadow-sm">
                 <div className="flex justify-between">
                   <span className="text-gray-500">Direction</span>
-                  <span className={`font-medium ${trade.tradeType === "buy" ? "text-green-600" : "text-red-600"}`}>
-                    {trade.tradeType === "buy" ? "LONG" : "SHORT"}
+                  <span className={`font-medium ${trade.trade_type === "buy" ? "text-green-600" : "text-red-600"}`}>
+                    {trade.trade_type === "buy" ? "LONG" : "SHORT"}
                   </span>
                 </div>
                 <div className="flex justify-between">
@@ -228,7 +228,7 @@ const TradeDetail = () => {
                   <span className="text-gray-500">Entry Price</span>
                   <span className="font-medium">{displayIfExists(trade.entry_price)}</span>
                 </div>
-                {trade.tradeStatus === "closed" && (
+                {trade.trade_status === "closed" && (
                   <div className="flex justify-between">
                     <span className="text-gray-500">Exit Price</span>
                     <span className="font-medium">{displayIfExists(trade.exit_price)}</span>
@@ -242,10 +242,10 @@ const TradeDetail = () => {
                   <span className="text-gray-500">Take Profit</span>
                   <span className="font-medium">{displayIfExists(trade.take_profit)}</span>
                 </div>
-                {trade.riskReward && (
+                {trade.rr && (
                   <div className="flex justify-between">
                     <span className="text-gray-500">Risk/Reward</span>
-                    <span className="font-medium">{trade.riskReward}</span>
+                    <span className="font-medium">{trade.rr}</span>
                   </div>
                 )}
               </div>
@@ -289,7 +289,7 @@ const TradeDetail = () => {
                   <span className="text-gray-500">Equity Before</span>
                   <span className="font-medium">{displayIfExists(trade.equity_before)}</span>
                 </div>
-                {trade.tradeStatus === "closed" && (
+                {trade.trade_status === "closed" && (
                   <>
                     <div className="flex justify-between">
                       <span className="text-gray-500">Equity After</span>

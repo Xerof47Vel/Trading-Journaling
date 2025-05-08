@@ -1,20 +1,22 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 
 const Login = () => {
     const [email,setEmail]=React.useState('');
     const [password,setPassword]=React.useState('');
+    const navigate = useNavigate();
 
     const handleSubmit=(e)=>{
         e.preventDefault();
         console.log("email",email);
         if(!email || !password){
-            alert("Please enter email and password")
+            alert("Please enter email and password");
         }
-        else if (email==="zhouvel7@gmail.com")
-        {
-            return window.location.href="/home"
+        else if (email==="zhouvel7@gmail.com") {
+            navigate("/home");
         }
     }
+    
     return (
         <div>
             <h1 className="text-2xl font-bold text-center mt-10">Login Page</h1>

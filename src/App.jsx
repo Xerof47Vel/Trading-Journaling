@@ -20,9 +20,6 @@ function AppWrapper() {
 
 function App() {
   const location = useLocation();
-
-
-
   const showNav = location.pathname !== "/";
 
   return (
