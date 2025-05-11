@@ -17,13 +17,19 @@ import BodyContent from './BodyContent.jsx';
 import axios from 'axios';
 import { useEffect, useState } from 'react';
 import LoadingSkeleton from './LoadingSkeleton.jsx';
+import { getIdToken } from 'firebase/auth';
 
-const Dashboard = (props) => {
+const  Dashboard =  (props) => {
+
+  // Properly log userId
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
 
   useEffect(() => {
+
+
     const getAccounts = async () => {
+    
       setIsLoading(true);
       try {
         console.log("Dashboard props", props); // Properly log props
