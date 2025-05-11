@@ -23,14 +23,15 @@ const TotalProfit = ({ isDark, data,title,icon }) => {
     const change=1.2
     const isPositive=true
 
-    console.log("data1",data)
-    console.log("title",title)
+
  
 
     const calculatePL=(trades)=>{
         let total = 0;
      
          for (let i = 0; i < trades.length; i++) {
+
+            
              total += trades[i].profit_loss;
          }
         return total;
