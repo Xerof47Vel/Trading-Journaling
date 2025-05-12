@@ -18,10 +18,12 @@ import {
 } from "lucide-react";
 import Img1 from "../../assets/profile.jpg";
 import Img2 from "../../assets/newLogo.png";
+import { useAuth } from "../../contexts/authContext/index.jsx";
 
 import { Link } from "react-router-dom";
 
 const Navigation = ({ onToggle, onUpdate }) => {
+  const { currentUser, userLoggedIn } = useAuth(); // Get current user from AuthContext
   const [collapsed, setCollapsed] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const [isDark, setIsDark] = useState(false);
@@ -390,7 +392,9 @@ const Navigation = ({ onToggle, onUpdate }) => {
                     className={`text-xs hover:underline ${linkColor}`}
                     onClick={() => console.log("View profile clicked")}
                   >
-                    john.doe@example.com
+                    {currentUser
+                      ? currentUser.email
+                      : "No user logged in"}
                   </button>
                 </span>
               </div>

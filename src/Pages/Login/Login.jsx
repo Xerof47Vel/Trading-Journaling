@@ -20,7 +20,7 @@ const LoginPage = () => {
         email,
         password
       );
-      window.location.href = "/home";
+     
     } catch (error) {
       console.log("Signup error", error.message);
     }
@@ -37,6 +37,7 @@ const LoginPage = () => {
       const token = await userCredential.user.getIdToken();
       console.log("User logged in:", userCredential.user);
       console.log("Token:", token);
+       window.location.href = "/home";
       return;
     } catch (error) {
       console.log("Login error", error.message);
