@@ -381,7 +381,7 @@ const Navigation = ({ onToggle, onUpdate }) => {
           {(!collapsed || isMobile) && (
             <div className="flex items-center p-2 mt-4 space-x-4">
               <img
-                src={Img1}
+                src={currentUser? currentUser.photoURL : Img1}
                 alt="User Profile"
                 className="w-12 h-12 rounded-lg object-cover"
               />
@@ -405,7 +405,7 @@ const Navigation = ({ onToggle, onUpdate }) => {
           {collapsed && !isMobile && (
             <div className="flex justify-center p-2 mt-4">
               <img
-                src={Img1}
+                src={currentUser? currentUser.photoURL : currentUser.photoURL}  
                 alt="User Profile"
                 className="w-12 h-12 rounded-lg object-cover"
               />

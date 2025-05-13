@@ -43,6 +43,12 @@ const  Dashboard =  (props) => {
           {
             type: "get_user_trading_accounts",
             body: { userId: 1 }, // later we will get the userId from the login page
+          },
+          {
+            headers: {
+              "Content-Type": "application/json",
+              "Authorization": `Bearer ${currentUser.accessToken}`,
+            },
           }
         );
         
@@ -62,7 +68,7 @@ const  Dashboard =  (props) => {
     };
 
     getAccounts();
-  }, [props]); // Add props to dependency array
+  }, [props,currentUser]); // Add props to dependency array
 
   if (error) {
     return (
