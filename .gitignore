@@ -26,3 +26,5 @@ dist-ssr
 *.zip
 .env
 package
+src/Firebase/AuthContext.jsx
+src/contexts/AuthContext

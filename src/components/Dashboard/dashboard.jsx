@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { use } from 'react';
 import { 
   BarChart3, 
   TrendingUp, 
@@ -17,22 +17,38 @@ import BodyContent from './BodyContent.jsx';
 import axios from 'axios';
 import { useEffect, useState } from 'react';
 import LoadingSkeleton from './LoadingSkeleton.jsx';
+import { useAuth } from '../../contexts/authContext/index.jsx';
 
-const Dashboard = (props) => {
+
+const  Dashboard =  (props) => {
+
+
+  const {currentUser,userLoggedIn}=useAuth(); // Get current user from AuthContext
+  // Properly log userId
+  console.log("Current User ID:", currentUser);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
 
   useEffect(() => {
+
+
     const getAccounts = async () => {
+     
+
       setIsLoading(true);
       try {
-        console.log("Dashboard props", props); // Properly log props
-
+      
         const response = await axios.post(
           "https://2s33943isc.execute-api.eu-north-1.amazonaws.com/development/getTrades",
           {
             type: "get_user_trading_accounts",
             body: { userId: 1 }, // later we will get the userId from the login page
+          },
+          {
+            headers: {
+              "Content-Type": "application/json",
+              "Authorization": `Bearer ${currentUser.accessToken}`,
+            },
           }
         );
         
@@ -40,7 +56,7 @@ const Dashboard = (props) => {
           throw new Error("Failed to fetch accounts data");
         }
         
-        console.log("Accounts data:", response.data.body);
+      
         const data = JSON.parse(response.data.body);
         localStorage.setItem("accounts", JSON.stringify(data.accounts));
         setIsLoading(false);
@@ -52,7 +68,7 @@ const Dashboard = (props) => {
     };
 
     getAccounts();
-  }, [props]); // Add props to dependency array
+  }, [props,currentUser]); // Add props to dependency array
 
   if (error) {
     return (

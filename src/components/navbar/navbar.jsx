@@ -18,10 +18,12 @@ import {
 } from "lucide-react";
 import Img1 from "../../assets/profile.jpg";
 import Img2 from "../../assets/newLogo.png";
+import { useAuth } from "../../contexts/authContext/index.jsx";
 
 import { Link } from "react-router-dom";
 
 const Navigation = ({ onToggle, onUpdate }) => {
+  const { currentUser, userLoggedIn } = useAuth(); // Get current user from AuthContext
   const [collapsed, setCollapsed] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const [isDark, setIsDark] = useState(false);
@@ -379,7 +381,7 @@ const Navigation = ({ onToggle, onUpdate }) => {
           {(!collapsed || isMobile) && (
             <div className="flex items-center p-2 mt-4 space-x-4">
               <img
-                src={Img1}
+                src={currentUser? currentUser.photoURL : Img1}
                 alt="User Profile"
                 className="w-12 h-12 rounded-lg object-cover"
               />
@@ -390,7 +392,9 @@ const Navigation = ({ onToggle, onUpdate }) => {
                     className={`text-xs hover:underline ${linkColor}`}
                     onClick={() => console.log("View profile clicked")}
                   >
-                    john.doe@example.com
+                    {currentUser
+                      ? currentUser.email
+                      : "No user logged in"}
                   </button>
                 </span>
               </div>
@@ -401,7 +405,7 @@ const Navigation = ({ onToggle, onUpdate }) => {
           {collapsed && !isMobile && (
             <div className="flex justify-center p-2 mt-4">
               <img
-                src={Img1}
+                src={currentUser? currentUser.photoURL : currentUser.photoURL}  
                 alt="User Profile"
                 className="w-12 h-12 rounded-lg object-cover"
               />
