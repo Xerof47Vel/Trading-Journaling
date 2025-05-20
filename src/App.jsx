@@ -1,7 +1,7 @@
 
 import { BrowserRouter as Router, Routes, Route, useLocation } from "react-router-dom";
 import Navigation from "./components/NavBar/navbar.jsx";
-import Home from "./components/Home/home.jsx";
+import Home from "./components/Home/HomeBeta.jsx";
 import AddTrade2 from "./Pages/Trades/AddTrade2.jsx";
 import Login from "./Pages/Login/Login.jsx";
 import Footer from "./components/Footer/Footer.jsx";
@@ -24,7 +24,7 @@ function App() {
 
   return (
     <>
-      {showNav && <Navigation />}
+      
       
       <Routes>
         <Route path="/" element={<Login />} />
